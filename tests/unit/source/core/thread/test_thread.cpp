@@ -251,16 +251,16 @@ TEST_F(TestThread, multiple_thread_test)
     /* task1_thread already the highest priority thread currently running, so
      * nothing change */
 
-    EXPECT_EQ(ThreadScheduler::thread_status_to_string(main_thread->get_status()), "bl rx");
-    EXPECT_EQ(ThreadScheduler::thread_status_to_string(idle_thread->get_status()), "pending");
-    EXPECT_EQ(ThreadScheduler::thread_status_to_string(task1_thread->get_status()), "running");
+    ASSERT_STREQ(ThreadScheduler::thread_status_to_string(main_thread->get_status()), "bl rx");
+    ASSERT_STREQ(ThreadScheduler::thread_status_to_string(idle_thread->get_status()), "pending");
+    ASSERT_STREQ(ThreadScheduler::thread_status_to_string(task1_thread->get_status()), "running");
 
-    EXPECT_EQ(ThreadScheduler::thread_status_to_string(THREAD_STATUS_STOPPED), "stopped");
-    EXPECT_EQ(ThreadScheduler::thread_status_to_string(THREAD_STATUS_SLEEPING), "sleeping");
-    EXPECT_EQ(ThreadScheduler::thread_status_to_string(THREAD_STATUS_MUTEX_BLOCKED), "bl mutex");
-    EXPECT_EQ(ThreadScheduler::thread_status_to_string(THREAD_STATUS_SEND_BLOCKED), "bl send");
-    EXPECT_EQ(ThreadScheduler::thread_status_to_string(THREAD_STATUS_REPLY_BLOCKED), "bl reply");
-    EXPECT_EQ(ThreadScheduler::thread_status_to_string(static_cast<thread_status_t>(100)), "unknown");
+    ASSERT_STREQ(ThreadScheduler::thread_status_to_string(THREAD_STATUS_STOPPED), "stopped");
+    ASSERT_STREQ(ThreadScheduler::thread_status_to_string(THREAD_STATUS_SLEEPING), "sleeping");
+    ASSERT_STREQ(ThreadScheduler::thread_status_to_string(THREAD_STATUS_MUTEX_BLOCKED), "bl mutex");
+    ASSERT_STREQ(ThreadScheduler::thread_status_to_string(THREAD_STATUS_SEND_BLOCKED), "bl send");
+    ASSERT_STREQ(ThreadScheduler::thread_status_to_string(THREAD_STATUS_REPLY_BLOCKED), "bl reply");
+    ASSERT_STREQ(ThreadScheduler::thread_status_to_string(static_cast<thread_status_t>(100)), "unknown");
 
     /**
      * -------------------------------------------------------------------------
