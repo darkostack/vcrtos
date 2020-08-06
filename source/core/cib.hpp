@@ -1,8 +1,7 @@
 #ifndef CORE_CIB_HPP
 #define CORE_CIB_HPP
 
-#include <assert.h>
-
+#include <vcrtos/assert.h>
 #include <vcrtos/cib.h>
 
 namespace vc {
@@ -14,7 +13,7 @@ public:
 
     void init(unsigned int size)
     {
-        assert(!(size & (size - 1)));
+        vcassert(!(size & (size - 1)));
         read_count = 0;
         write_count = 0;
         mask = size - 1;

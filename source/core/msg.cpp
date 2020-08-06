@@ -119,7 +119,9 @@ int Msg::receive(int blocking)
 
             ThreadScheduler::yield_higher_priority_thread();
 
-            assert(get<ThreadScheduler>().get_current_active_thread()->get_status() != THREAD_STATUS_RECEIVE_BLOCKED);
+#ifndef UNITTEST
+            vcassert(get<ThreadScheduler>().get_current_active_thread()->get_status() != THREAD_STATUS_RECEIVE_BLOCKED);
+#endif
         }
         else
         {
@@ -258,7 +260,7 @@ int Msg::send_in_isr(kernel_pid_t target_pid)
 
 int Msg::send_receive(Msg *reply, kernel_pid_t target_pid)
 {
-    assert(get<ThreadScheduler>().get_current_active_pid() != target_pid);
+    vcassert(get<ThreadScheduler>().get_current_active_pid() != target_pid);
 
     unsigned state = cpu_irq_disable();
 
@@ -283,7 +285,7 @@ int Msg::reply(Msg *reply)
 
     Thread *target_thread = get<ThreadScheduler>().get_thread_from_scheduler(sender_pid);
 
-    assert(target_thread != NULL);
+    vcassert(target_thread != NULL);
 
     if (target_thread->get_status() != THREAD_STATUS_REPLY_BLOCKED)
     {

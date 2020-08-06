@@ -2,8 +2,8 @@
 #define CORE_MSG_HPP
 
 #include <stdint.h>
-#include <assert.h>
 
+#include <vcrtos/assert.h>
 #include <vcrtos/config.h>
 #include <vcrtos/kernel.h>
 #include <vcrtos/msg.h>

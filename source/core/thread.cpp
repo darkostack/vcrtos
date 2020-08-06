@@ -1,4 +1,4 @@
-#include <assert.h>
+#include <vcrtos/assert.h>
 
 #include "core/instance.hpp"
 #include "core/thread.hpp"
@@ -137,7 +137,7 @@ void Thread::stack_init(thread_handler_func_t func, void *arg, void *stack_start
 
 void Thread::add_to_list(List *list)
 {
-    assert(get_status() < THREAD_STATUS_RUNNING);
+    vcassert(get_status() < THREAD_STATUS_RUNNING);
 
     uint8_t my_priority = get_priority();
 
@@ -609,14 +609,14 @@ thread_flags_t ThreadScheduler::thread_flags_wait_one(thread_flags_t mask)
 
 void ThreadScheduler::event_claim(void)
 {
-    assert(event_waiter == NULL);
+    vcassert(event_waiter == NULL);
 
     event_waiter = get_current_active_thread();
 }
 
 void ThreadScheduler::event_post(Event *event)
 {
-    assert(event);
+    vcassert(event);
 
     unsigned state = cpu_irq_disable();
 
@@ -637,7 +637,7 @@ void ThreadScheduler::event_post(Event *event)
 
 void ThreadScheduler::event_cancel(Event *event)
 {
-    assert(event);
+    vcassert(event);
 
     unsigned state = cpu_irq_disable();
 
