@@ -32,12 +32,12 @@ public:
 
     template <typename Type> inline Type &get(void);
 
+    void after_init(void);
+
 private:
 #ifndef UNITTEST
     explicit Instance(void);
 #endif
-
-    void after_init(void);
 
     ThreadScheduler thread_scheduler;
 
