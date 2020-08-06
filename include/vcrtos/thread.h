@@ -75,7 +75,7 @@ kernel_pid_t thread_create(instance_t *instance,
 
 void thread_scheduler_run(instance_t *instance);
 
-void thread_exit(void);
+void thread_exit(instance_t *instance);
 
 int thread_pid_is_valid(kernel_pid_t pid);
 
