@@ -64,19 +64,31 @@ typedef struct thread
 #define THREAD_FLAGS_CREATE_WOUT_YIELD (0x2)
 #define THREAD_FLAGS_CREATE_STACKMARKER (0x4)
 
+kernel_pid_t thread_create(instance_t *instance,
+                           char *stack,
+                           int stack_size,
+                           char priority,
+                           int flags,
+                           thread_handler_func_t func,
+                           void *arg,
+                           const char *name);
+
 void thread_scheduler_run(instance_t *instance);
 
-void thread_task_exit(void);
+void thread_exit(void);
 
 int thread_pid_is_valid(kernel_pid_t pid);
 
-void thread_yield(void);
+void thread_yield(instance_t *instance);
 
 thread_t *thread_current(instance_t *instance);
 
-kernel_pid_t thread_current_pid(void);
+kernel_pid_t thread_current_pid(instance_t *instance);
 
-char *thread_arch_stack_init(thread_handler_func_t func, void *arg, void *stack_start, int stack_size);
+char *thread_arch_stack_init(thread_handler_func_t func,
+                             void *arg,
+                             void *stack_start,
+                             int stack_size);
 
 void thread_arch_stack_print(void);
 

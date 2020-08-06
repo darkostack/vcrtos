@@ -120,7 +120,7 @@ public:
 
     Thread *get_thread_from_scheduler(kernel_pid_t pid) { return scheduled_threads[pid]; }
 
-    void set_thread_to_scheduler(Thread *thread, kernel_pid_t pid) { scheduled_threads[pid] = thread; }
+    void set_thread_scheduler(Thread *thread, kernel_pid_t pid) { scheduled_threads[pid] = thread; }
 
     unsigned int is_context_switch_requested(void) { return context_switch_request; }
 
@@ -153,6 +153,8 @@ public:
     int wakeup_thread(kernel_pid_t pid);
 
     void yield(void);
+
+    void exit_current_active_thread(void);
 
     static void yield_higher_priority_thread(void);
 

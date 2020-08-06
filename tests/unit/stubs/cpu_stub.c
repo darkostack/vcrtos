@@ -47,3 +47,7 @@ void cpu_trigger_pendsv_interrupt(void)
 {
     is_pendsv_interrupt_triggered = 1;
 }
+
+void cpu_switch_context_exit(void)
+{
+}

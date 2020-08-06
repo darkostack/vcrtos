@@ -81,7 +81,7 @@ Thread *Thread::init(Instance &instances, char *stack, int stack_size, unsigned 
         return NULL;
     }
 
-    tcb->get<ThreadScheduler>().set_thread_to_scheduler(tcb, pid);
+    tcb->get<ThreadScheduler>().set_thread_scheduler(tcb, pid);
 
     tcb->set_pid(pid);
 
@@ -415,6 +415,21 @@ void ThreadScheduler::yield(void)
     cpu_irq_restore(state);
 
     yield_higher_priority_thread();
+}
+
+void ThreadScheduler::exit_current_active_thread(void)
+{
+    (void) cpu_irq_disable();
+
+    set_thread_scheduler(NULL, get_current_active_pid());
+
+    decrement_numof_threads_in_scheduler();
+
+    set_thread_status(get_current_active_thread(), THREAD_STATUS_STOPPED);
+
+    set_current_active_thread(NULL);
+
+    cpu_switch_context_exit();
 }
 
 const char *ThreadScheduler::thread_status_to_string(thread_status_t status)
