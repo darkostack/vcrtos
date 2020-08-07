@@ -66,7 +66,7 @@ typedef struct thread
 
 kernel_pid_t thread_create(instance_t *instance,
                            char *stack,
-                           int stack_size,
+                           int size,
                            char priority,
                            int flags,
                            thread_handler_func_t func,
@@ -88,7 +88,7 @@ kernel_pid_t thread_current_pid(instance_t *instance);
 char *thread_arch_stack_init(thread_handler_func_t func,
                              void *arg,
                              void *stack_start,
-                             int stack_size);
+                             int size);
 
 void thread_arch_stack_print(void);
 

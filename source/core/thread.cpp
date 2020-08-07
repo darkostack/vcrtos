@@ -6,12 +6,12 @@
 
 namespace vc {
 
-Thread *Thread::init(Instance &instances, char *stack, int stack_size, unsigned priority, int flags,
+Thread *Thread::init(Instance &instances, char *stack, int size, unsigned priority, int flags,
                      thread_handler_func_t handler_func, void *arg, const char *name)
 {
     if (priority >= VCRTOS_CONFIG_THREAD_PRIORITY_LEVELS) return NULL;
 
-    int total_stack_size = stack_size;
+    int total_stack_size = size;
 
     /* aligned the stack on 16/32 bit boundary */
     uintptr_t misalignment = reinterpret_cast<uintptr_t>(stack) % 8;
@@ -20,27 +20,27 @@ Thread *Thread::init(Instance &instances, char *stack, int stack_size, unsigned 
     {
         misalignment = 8 - misalignment;
         stack += misalignment;
-        stack_size -= misalignment;
+        size -= misalignment;
     }
 
     /* make room for the Thread */
-    stack_size -= sizeof(Thread);
+    size -= sizeof(Thread);
 
     /* round down the stacksize to multiple of Thread aligments (usually 16/32 bit) */
-    stack_size -= stack_size % 8;
+    size -= size % 8;
 
-    if (stack_size < 0)
+    if (size < 0)
     {
         // TODO: warning: stack size is to small
     }
 
     /* allocate thread control block (tcb) at the top of our stackspace */
-    Thread *tcb = (Thread *)(stack + stack_size);
+    Thread *tcb = (Thread *)(stack + size);
 
     if (flags & THREAD_FLAGS_CREATE_STACKMARKER)
     {
         /* assign each int of the stack the value of it's address, for test purposes */
-        uintptr_t *stackmax = reinterpret_cast<uintptr_t *>(stack + stack_size);
+        uintptr_t *stackmax = reinterpret_cast<uintptr_t *>(stack + size);
         uintptr_t *stackp = reinterpret_cast<uintptr_t *>(stack);
 
         while (stackp < stackmax)
@@ -85,7 +85,7 @@ Thread *Thread::init(Instance &instances, char *stack, int stack_size, unsigned 
 
     tcb->set_pid(pid);
 
-    tcb->stack_init(handler_func, arg, stack, stack_size);
+    tcb->stack_init(handler_func, arg, stack, size);
 
     tcb->set_stack_start(stack);
 
@@ -130,9 +130,9 @@ Thread *Thread::init(Instance &instances, char *stack, int stack_size, unsigned 
     return tcb;
 }
 
-void Thread::stack_init(thread_handler_func_t func, void *arg, void *stack_start, int stack_size)
+void Thread::stack_init(thread_handler_func_t func, void *arg, void *ptr, int size)
 {
-    set_stack_pointer(thread_arch_stack_init(func, arg, stack_start, stack_size));
+    set_stack_pointer(thread_arch_stack_init(func, arg, ptr, size));
 }
 
 void Thread::add_to_list(List *list)

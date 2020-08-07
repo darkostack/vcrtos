@@ -10,8 +10,8 @@ DEFINE_ALIGNED_VAR(instance_raw, sizeof(Instance), uint64_t);
 #endif
 
 Instance::Instance(void)
-    : initialized(false)
-    , thread_scheduler()
+    : thread_scheduler()
+    , initialized(false)
 {
 #ifdef UNITTEST
     initialized = true;
@@ -44,7 +44,7 @@ Instance &Instance::init_single(void)
 {
     Instance *instance = &get();
 
-    VERIFY_OR_EXIT(instance->is_initialized == false);
+    VERIFY_OR_EXIT(instance->is_initialized() == false);
 
     instance = new (&instance_raw) Instance();
 

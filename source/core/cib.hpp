@@ -31,7 +31,7 @@ public:
 
     int put_unsafe(void) { return static_cast<int>(write_count++ & mask); }
 
-    int full(void) { return avail() > static_cast<int>(mask); }
+    int full(void) { return avail() > mask; }
 
     int get(void)
     {

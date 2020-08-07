@@ -1,19 +1,21 @@
 #include <vcrtos/thread.h>
 
+#include "core/instance.hpp"
 #include "core/thread.hpp"
 
 using namespace vc;
 
 kernel_pid_t thread_create(instance_t *instance,
                            char *stack,
-                           int stack_size,
+                           int size,
                            char priority,
                            int flags,
                            thread_handler_func_t func,
                            void *arg,
                            const char *name)
 {
-    Thread *thread = Thread::init(*instance, stack, stack_size, priority, flags, func, arg, name);
+    Instance &instances = *static_cast<Instance *>(instance);
+    Thread *thread = Thread::init(instances, stack, size, priority, flags, func, arg, name);
     return thread->get_pid();
 }
 

@@ -26,7 +26,7 @@ extern uint64_t instance_raw[];
 class Thread : public thread_t
 {
 public:
-    static Thread *init(Instance &instances, char *stack, int stack_size, unsigned priority, int flags,
+    static Thread *init(Instance &instances, char *stack, int size, unsigned priority, int flags,
                         thread_handler_func_t handler_func, void *arg, const char *name);
 
     kernel_pid_t get_pid(void) { return pid; }
@@ -76,7 +76,7 @@ private:
 
     void set_stack_pointer(char *ptr) { stack_pointer = ptr; }
 
-    void stack_init(thread_handler_func_t func, void *arg, void *stack_start, int stack_size);
+    void stack_init(thread_handler_func_t func, void *arg, void *ptr, int size);
 
     template <typename Type> inline Type &get(void) const;
 
