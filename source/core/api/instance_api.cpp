@@ -9,7 +9,7 @@ using namespace vc;
 instance_t *instance_init(void *buffer, size_t *size)
 {
     Instance *instance;
-    instance = Instance::init(buffer, size);
+    instance = &Instance::init(buffer, size);
     return instance;
 }
 
