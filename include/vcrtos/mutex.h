@@ -20,7 +20,11 @@ typedef struct mutex
 
 void mutex_lock(mutex_t *mutex);
 
+void mutex_try_lock(mutex_t *mutex);
+
 void mutex_unlock(mutex_t *mutex);
+
+void mutex_unlock_and_sleeping(mutex_t *mutex);
 
 #ifdef __cplusplus
 }
