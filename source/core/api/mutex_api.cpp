@@ -4,6 +4,12 @@
 
 using namespace vc;
 
+void mutex_init(void *instances, mutex_t *mutex)
+{
+    mutex->instance = instances;
+    mutex->queue.next = NULL;
+}
+
 void mutex_lock(mutex_t *mutex)
 {
     Mutex &mtx = *static_cast<Mutex *>(mutex);

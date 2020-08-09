@@ -18,6 +18,8 @@ typedef struct mutex
 #endif
 } mutex_t;
 
+void mutex_init(void *instance, mutex_t *mutex);
+
 void mutex_lock(mutex_t *mutex);
 
 void mutex_try_lock(mutex_t *mutex);
