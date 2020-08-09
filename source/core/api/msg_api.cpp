@@ -36,10 +36,22 @@ int msg_send_receive(msg_t *msg, msg_t *reply, kernel_pid_t pid)
     return m.send_receive(static_cast<Msg *>(reply), pid);
 }
 
+int msg_send_to_self_queue(msg_t *msg)
+{
+    Msg &m = *static_cast<Msg *>(msg);
+    return m.send_to_self_queue();
+}
+
 int msg_reply(msg_t *msg, msg_t *reply)
 {
     Msg &m = *static_cast<Msg *>(msg);
     return m.reply(static_cast<Msg *>(reply));
+}
+
+int msg_reply_in_isr(msg_t *msg, msg_t *reply)
+{
+    Msg &m = *static_cast<Msg *>(msg);
+    return m.reply_in_isr(static_cast<Msg *>(reply));
 }
 
 void msg_active_thread_queue_print(void *instance)
