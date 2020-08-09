@@ -1,12 +1,13 @@
 #ifndef VCRTOS_THREAD_H
 #define VCRTOS_THREAD_H
 
+#include <stdlib.h>
+
 #include <vcrtos/config.h>
 #include <vcrtos/kernel.h>
 #include <vcrtos/cib.h>
 #include <vcrtos/clist.h>
 #include <vcrtos/msg.h>
-#include <vcrtos/instance.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,7 +65,7 @@ typedef struct thread
 #define THREAD_FLAGS_CREATE_WOUT_YIELD (0x2)
 #define THREAD_FLAGS_CREATE_STACKMARKER (0x4)
 
-kernel_pid_t thread_create(instance_t *instance,
+kernel_pid_t thread_create(void *instance,
                            char *stack,
                            int size,
                            char priority,
@@ -73,17 +74,17 @@ kernel_pid_t thread_create(instance_t *instance,
                            void *arg,
                            const char *name);
 
-void thread_scheduler_run(instance_t *instance);
+void thread_scheduler_run(void *instance);
 
-void thread_exit(instance_t *instance);
+void thread_exit(void *instance);
 
 int thread_pid_is_valid(kernel_pid_t pid);
 
-void thread_yield(instance_t *instance);
+void thread_yield(void *instance);
 
-thread_t *thread_current(instance_t *instance);
+thread_t *thread_current(void *instance);
 
-kernel_pid_t thread_current_pid(instance_t *instance);
+kernel_pid_t thread_current_pid(void *instance);
 
 char *thread_arch_stack_init(thread_handler_func_t func,
                              void *arg,

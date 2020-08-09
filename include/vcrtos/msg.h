@@ -6,7 +6,6 @@
 #include <vcrtos/config.h>
 #include <vcrtos/kernel.h>
 #include <vcrtos/list.h>
-#include <vcrtos/instance.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,7 +25,7 @@ typedef struct msg
 #endif
 } msg_t;
 
-void msg_init(instance_t *instance, msg_t *msg);
+void msg_init(void *instance, msg_t *msg);
 
 int msg_receive(msg_t *msg);
 
@@ -38,7 +37,7 @@ int msg_send_receive(msg_t *msg, msg_t *reply, kernel_pid_t pid);
 
 int msg_reply(msg_t *msg, msg_t *reply);
 
-void msg_active_thread_queue_print(instance_t *instance);
+void msg_active_thread_queue_print(void *instance);
 
 #ifdef __cplusplus
 }

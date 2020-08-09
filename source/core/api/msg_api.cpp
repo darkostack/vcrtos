@@ -5,7 +5,7 @@
 
 using namespace vc;
 
-void msg_init(instance_t *instance, msg_t *msg)
+void msg_init(void *instance, msg_t *msg)
 {
     Instance &instances = *static_cast<Instance *>(instance);
     Msg &m = *static_cast<Msg *>(msg);
@@ -42,7 +42,7 @@ int msg_reply(msg_t *msg, msg_t *reply)
     return m.reply(static_cast<Msg *>(reply));
 }
 
-void msg_active_thread_queue_print(instance_t *instance)
+void msg_active_thread_queue_print(void *instance)
 {
     (void) instance;
     // TODO:

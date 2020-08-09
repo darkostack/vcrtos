@@ -5,7 +5,7 @@
 
 using namespace vc;
 
-kernel_pid_t thread_create(instance_t *instance,
+kernel_pid_t thread_create(void *instance,
                            char *stack,
                            int size,
                            char priority,
@@ -19,13 +19,13 @@ kernel_pid_t thread_create(instance_t *instance,
     return thread->get_pid();
 }
 
-void thread_scheduler_run(instance_t *instance)
+void thread_scheduler_run(void *instance)
 {
     Instance &instances = *static_cast<Instance *>(instance);
     instances.get<ThreadScheduler>().run();
 }
 
-void thread_exit(instance_t *instance)
+void thread_exit(void *instance)
 {
     Instance &instances = *static_cast<Instance *>(instance);
     instances.get<ThreadScheduler>().exit_current_active_thread();
@@ -36,20 +36,20 @@ int thread_pid_is_valid(kernel_pid_t pid)
     return Thread::is_pid_valid(pid);
 }
 
-void thread_yield(instance_t *instance)
+void thread_yield(void *instance)
 {
     Instance &instances = *static_cast<Instance *>(instance);
     instances.get<ThreadScheduler>().yield();
 }
 
-thread_t *thread_current(instance_t *instance)
+thread_t *thread_current(void *instance)
 {
     Instance &instances = *static_cast<Instance *>(instance);
     Thread *thread = instances.get<ThreadScheduler>().get_current_active_thread();
     return static_cast<thread_t *>(thread);
 }
 
-kernel_pid_t thread_current_pid(instance_t *instance)
+kernel_pid_t thread_current_pid(void *instance)
 {
     Instance &instances = *static_cast<Instance *>(instance);
     return instances.get<ThreadScheduler>().get_current_active_pid();
