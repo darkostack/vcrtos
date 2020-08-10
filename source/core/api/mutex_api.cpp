@@ -6,7 +6,11 @@ using namespace vc;
 
 void mutex_init(void *instances, mutex_t *mutex)
 {
+#if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
     mutex->instance = instances;
+#else
+    (void) instances;
+#endif
     mutex->queue.next = NULL;
 }
 
