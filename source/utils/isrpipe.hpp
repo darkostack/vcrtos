@@ -77,12 +77,12 @@ class UartIsrpipe : public Isrpipe
 {
 public:
     explicit UartIsrpipe(Instance &instance)
-        : Isrpipe(instance, _buf, VCRTOS_CONFIG_UTILS_UART_TSRB_SIZE)
+        : Isrpipe(instance, _buf, sizeof(_buf))
     {
     }
 
 private:
-    char _buf[VCRTOS_CONFIG_UTILS_UART_TSRB_SIZE];
+    char _buf[VCRTOS_CONFIG_UTILS_UART_TSRB_ISRPIPE_SIZE];
 };
 
 } // namespace utils
