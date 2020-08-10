@@ -40,7 +40,7 @@ TEST_F(TestUtilsRingbuffer, functions_test)
     EXPECT_NE(obj->get_one(), -1); /* this get 0x1 */
     EXPECT_EQ(obj->get_one(), 0x2);
 
-    EXPECT_TRUE(obj->is_empyt());
+    EXPECT_TRUE(obj->is_empty());
     EXPECT_FALSE(obj->is_full());
 
     EXPECT_EQ(obj->peek_one(), -1); /* nothing in the buffer */
@@ -56,7 +56,7 @@ TEST_F(TestUtilsRingbuffer, functions_test)
 
     EXPECT_EQ(obj->avail(), 8);
 
-    EXPECT_FALSE(obj->is_empyt());
+    EXPECT_FALSE(obj->is_empty());
     EXPECT_TRUE(obj->is_full());
 
     EXPECT_EQ(obj->add_one(0x9), 0x1); /* this will remove the head (0x1) and add (0x9) to the tail */

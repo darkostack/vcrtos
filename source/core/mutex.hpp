@@ -20,8 +20,6 @@ extern uint64_t instance_raw[];
 class Mutex : public mutex_t
 {
 public:
-    Mutex(void) {}
-
     explicit Mutex(Instance &instance)
     {
         init(instance);

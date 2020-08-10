@@ -61,7 +61,7 @@ unsigned RingBuffer::add(const char *buf, unsigned size)
 
 int RingBuffer::get_one(void)
 {
-    if (!is_empyt())
+    if (!is_empty())
     {
         return (unsigned char)get_head();
     }

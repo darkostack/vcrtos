@@ -10,16 +10,11 @@ class RingBuffer
 {
 public:
     explicit RingBuffer(char *buf, unsigned size)
+        : _buf(buf)
+        , _size(size)
+        , _start(0)
+        , _avail(0)
     {
-        init(buf, size);
-    }
-
-    void init(char *buf, unsigned size)
-    {
-        _buf = buf;
-        _size = size;
-        _start = 0;
-        _avail = 0;
     }
 
     int add_one(char byte);
@@ -32,7 +27,7 @@ public:
 
     unsigned remove(unsigned size);
 
-    int is_empyt(void) { return _avail == 0; }
+    int is_empty(void) { return _avail == 0; }
 
     int is_full(void) { return _avail == _size; }
 
