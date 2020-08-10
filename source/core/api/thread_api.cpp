@@ -54,3 +54,10 @@ kernel_pid_t thread_current_pid(void *instance)
     Instance &instances = *static_cast<Instance *>(instance);
     return instances.get<ThreadScheduler>().get_current_active_pid();
 }
+
+thread_t *thread_get_from_scheduler(void *instance, kernel_pid_t pid)
+{
+    Instance &instances = *static_cast<Instance *>(instance);
+    Thread *thread = instances.get<ThreadScheduler>().get_thread_from_scheduler(pid);
+    return static_cast<thread_t *>(thread);
+}

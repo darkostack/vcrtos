@@ -5,10 +5,8 @@ set(unittest-sources
     ../../source/core/instance.cpp
     ../../source/core/thread.cpp
     ../../source/core/mutex.cpp
-    ../../source/core/msg.cpp
     ../../source/core/assert_failure.c
     ../../source/core/api/mutex_api.cpp
-    ../../source/core/api/msg_api.cpp
     ../../source/core/api/thread_api.cpp
     stubs/cpu_stub.c
     stubs/thread_stub.c
@@ -16,7 +14,7 @@ set(unittest-sources
 )
 
 set(unittest-test-sources
-    source/core/api/msg/test_msg_api.cpp
+    source/core/api/thread/test_thread_api.cpp
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DPROJECT_CONFIG_FILE='\"vcrtos-unittest-config.h\"'")
