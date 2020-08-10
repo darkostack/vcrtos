@@ -31,37 +31,12 @@ protected:
     }
 };
 
-class TestMultipleInstancesThreadApi: public testing::Test
-{
-protected:
-    Instance *instance1;
-    Instance *instance2;
-
-    virtual void SetUp()
-    {
-        instance1 = new Instance();
-        instance2 = new Instance();
-    }
-
-    virtual void TearDown()
-    {
-        delete instance1;
-        delete instance2;
-    }
-};
-
 TEST_F(TestThreadApi, constructor_test)
 {
     EXPECT_TRUE(instance);
 }
 
-TEST_F(TestMultipleInstancesThreadApi, constructor_test)
-{
-    EXPECT_TRUE(instance1);
-    EXPECT_TRUE(instance2);
-}
-
-TEST_F(TestThreadApi, single_thread_test)
+TEST_F(TestThreadApi, basic_thread_init_test)
 {
     EXPECT_TRUE(instance->is_initialized());
 
@@ -85,24 +60,24 @@ TEST_F(TestThreadApi, single_thread_test)
      * -------------------------------------------------------------------------
      **/
 
-    char stack[128];
+    char stack1[128];
 
-    thread_t *thread;
+    thread_t *thread1;
 
-    kernel_pid_t thread_pid = thread_create(static_cast<void *>(instance), stack, sizeof(stack), 15,
-                                            THREAD_FLAGS_CREATE_WOUT_YIELD | THREAD_FLAGS_CREATE_STACKMARKER,
-                                            NULL, NULL, "idle");
+    kernel_pid_t thread1_pid = thread_create(static_cast<void *>(instance), stack1, sizeof(stack1), 15,
+                                             THREAD_FLAGS_CREATE_WOUT_YIELD | THREAD_FLAGS_CREATE_STACKMARKER,
+                                             NULL, NULL, "thread1");
 
-    thread = thread_get_from_scheduler(static_cast<void *>(instance), thread_pid);
+    thread1 = thread_get_from_scheduler(static_cast<void *>(instance), thread1_pid);
 
-    EXPECT_EQ(thread_pid_is_valid(thread->pid), 1);
+    EXPECT_EQ(thread_pid_is_valid(thread1->pid), 1);
 
-    EXPECT_NE(thread, nullptr);
+    EXPECT_NE(thread1, nullptr);
 
-    EXPECT_EQ(thread->pid, 1);
-    EXPECT_EQ(thread->priority, 15);
-    EXPECT_EQ(thread->name, "idle");
-    EXPECT_EQ(thread->status, THREAD_STATUS_PENDING);
+    EXPECT_EQ(thread1->pid, 1);
+    EXPECT_EQ(thread1->priority, 15);
+    EXPECT_EQ(thread1->name, "thread1");
+    EXPECT_EQ(thread1->status, THREAD_STATUS_PENDING);
 
     EXPECT_EQ(instance->get<ThreadScheduler>().get_numof_threads_in_scheduler(), 1);
     EXPECT_FALSE(instance->get<ThreadScheduler>().is_context_switch_requested());
@@ -115,13 +90,68 @@ TEST_F(TestThreadApi, single_thread_test)
 
     thread_scheduler_run(static_cast<void *>(instance));
 
-    EXPECT_EQ(thread->status, THREAD_STATUS_RUNNING);
+    EXPECT_EQ(thread1->status, THREAD_STATUS_RUNNING);
 
-    EXPECT_EQ(thread_current(static_cast<void *>(instance)), thread);
-    EXPECT_EQ(thread_current_pid(static_cast<void *>(instance)), thread->pid);
+    EXPECT_EQ(thread_current(static_cast<void *>(instance)), thread1);
+    EXPECT_EQ(thread_current_pid(static_cast<void *>(instance)), thread1->pid);
 
-    EXPECT_EQ(instance->get<ThreadScheduler>().get_current_active_pid(), thread->pid);
+    EXPECT_EQ(instance->get<ThreadScheduler>().get_current_active_pid(), thread1->pid);
     EXPECT_EQ(instance->get<ThreadScheduler>().get_numof_threads_in_scheduler(), 1);
+
+    /**
+     * -------------------------------------------------------------------------
+     * [TEST CASE] creat new thread and exit current active thread
+     * -------------------------------------------------------------------------
+     **/
+
+    char stack2[128];
+
+    thread_t *thread2;
+
+    kernel_pid_t thread2_pid = thread_create(static_cast<void *>(instance), stack2, sizeof(stack2), 14,
+                                             THREAD_FLAGS_CREATE_WOUT_YIELD | THREAD_FLAGS_CREATE_STACKMARKER,
+                                             NULL, NULL, "thread2");
+
+    thread2 = thread_get_from_scheduler(static_cast<void *>(instance), thread2_pid);
+
+    EXPECT_EQ(thread_pid_is_valid(thread2->pid), 1);
+
+    EXPECT_NE(thread2, nullptr);
+
+    EXPECT_EQ(thread2->pid, 2);
+    EXPECT_EQ(thread2->priority, 14);
+    EXPECT_EQ(thread2->name, "thread2");
+    EXPECT_EQ(thread2->status, THREAD_STATUS_PENDING);
+
+    thread_scheduler_run(static_cast<void *>(instance));
+
+    EXPECT_EQ(thread1->status, THREAD_STATUS_PENDING);
+    EXPECT_EQ(thread2->status, THREAD_STATUS_RUNNING);
+
+    EXPECT_EQ(thread_current(static_cast<void *>(instance)), thread2);
+    EXPECT_EQ(thread_current_pid(static_cast<void *>(instance)), thread2->pid);
+
+    EXPECT_EQ(instance->get<ThreadScheduler>().get_numof_threads_in_scheduler(), 2);
+
+    /* exit current active thread */
+
+    thread_exit(static_cast<void *>(instance));
+
+    EXPECT_EQ(thread1->status, THREAD_STATUS_PENDING);
+    EXPECT_EQ(thread2->status, THREAD_STATUS_STOPPED);
+
+    thread_scheduler_run(static_cast<void *>(instance));
+
+    EXPECT_EQ(thread_current(static_cast<void *>(instance)), thread1);
+    EXPECT_EQ(thread_current_pid(static_cast<void *>(instance)), thread1->pid);
+
+    EXPECT_EQ(instance->get<ThreadScheduler>().get_numof_threads_in_scheduler(), 1);
+
+    /* try to get thread that was removed from scheduler */
+
+    thread_t *thread = thread_get_from_scheduler(static_cast<void *>(instance), thread2->pid);
+
+    EXPECT_EQ(thread, nullptr); /* we will get null */
 }
 
 TEST_F(TestThreadApi, multiple_thread_test)
