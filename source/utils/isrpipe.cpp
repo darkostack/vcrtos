@@ -23,10 +23,17 @@ int Isrpipe::read(char *buf, size_t size)
 {
     int res;
 
+#ifdef UNITTEST
+    if (!(res = get_tsrb().get(buf, size)))
+    {
+        get_mutex().lock();
+    }
+#else
     while (!(res = get_tsrb().get(buf, size)))
     {
         get_mutex().lock();
     }
+#endif
 
     return res;
 }
