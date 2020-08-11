@@ -2,6 +2,7 @@
 #define VCRTOS_KERNEL_H
 
 #include <stdint.h>
+#include <inttypes.h>
 
 #include <vcrtos/config.h>
 

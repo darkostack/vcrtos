@@ -88,10 +88,7 @@ kernel_pid_t thread_current_pid(void *instance);
 
 thread_t *thread_get_from_scheduler(void *instance, kernel_pid_t pid);
 
-char *thread_arch_stack_init(thread_handler_func_t func,
-                             void *arg,
-                             void *stack_start,
-                             int size);
+char *thread_arch_stack_init(thread_handler_func_t func, void *arg, void *stack_start, int size);
 
 void thread_arch_stack_print(void);
 

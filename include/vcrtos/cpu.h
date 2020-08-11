@@ -37,6 +37,18 @@ void cpu_trigger_pendsv_interrupt(void);
 
 void cpu_switch_context_exit(void);
 
+void cpu_print_last_instruction(void);
+
+void cpu_sleep_until_event(void);
+
+void cpu_sleep(int deep);
+
+void cpu_jump_to_image(uint32_t image_addr);
+
+uint32_t cpu_get_image_base_addr(void);
+
+void *cpu_get_msp(void);
+
 #ifdef __cplusplus
 }
 #endif
