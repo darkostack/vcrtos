@@ -1,6 +1,7 @@
 #ifndef VCRTOS_CLIST_H
 #define VCRTOS_CLIST_H
 
+#include <vcrtos/config.h>
 #include <vcrtos/list.h>
 
 #ifdef __cplusplus

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include <vcrtos/instance.h>
+#include <vcrtos/config.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +31,7 @@ void cpu_irq_restore(unsigned state);
 
 int cpu_is_in_isr(void);
 
-void cpu_end_of_isr(instance_t *instance);
+void cpu_end_of_isr(void);
 
 void cpu_trigger_pendsv_interrupt(void);
 

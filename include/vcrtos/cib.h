@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include <vcrtos/config.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,6 +1,8 @@
 #ifndef VCRTOS_LIST_H
 #define VCRTOS_LIST_H
 
+#include <vcrtos/config.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -3,8 +3,8 @@
 
 #define VCRTOS_CONFIG_H_IN
 
-#ifdef PROJECT_CONFIG_FILE
-#include PROJECT_CONFIG_FILE
+#ifdef VCRTOS_PROJECT_CONFIG_FILE
+#include VCRTOS_PROJECT_CONFIG_FILE
 #endif
 
 #include <vcrtos/default-config.h>

@@ -1,6 +1,8 @@
 #ifndef VCRTOS_ASSERT_H
 #define VCRTOS_ASSERT_H
 
+#include <vcrtos/config.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
