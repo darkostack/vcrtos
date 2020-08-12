@@ -1,17 +1,15 @@
 #include <vcrtos/mutex.h>
 
+#include "core/instance.hpp"
 #include "core/mutex.hpp"
+#include "core/new.hpp"
 
 using namespace vc;
 
 void mutex_init(void *instances, mutex_t *mutex)
 {
-#if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
-    mutex->instance = instances;
-#else
-    (void) instances;
-#endif
-    mutex->queue.next = NULL;
+    Instance &instance = *static_cast<Instance *>(instances);
+    mutex = new (mutex) Mutex(instance);
 }
 
 void mutex_lock(mutex_t *mutex)
