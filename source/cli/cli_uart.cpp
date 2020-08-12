@@ -40,6 +40,10 @@ extern "C" void *thread_cli_uart_handler(void *arg)
             uart->receive_task(reinterpret_cast<const uint8_t *>(&c), 1);
         }
     }
+
+    /* should not reach here */
+
+    return NULL;
 }
 
 char _cli_uart_stack[VCRTOS_CONFIG_CLI_UART_STACK_SIZE];
