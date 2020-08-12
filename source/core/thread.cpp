@@ -745,16 +745,21 @@ void ThreadScheduler::event_loop(void)
 
 #endif // #if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
 
-extern "C" void cpu_end_of_isr(void)
+extern "C" void cpu_end_of_isr(void *instances)
 {
-#if !VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
-    Instance &instance = *static_cast<Instance *>(instance_get());
+#ifndef UNITTEST
+    if (instances == NULL)
+    {
+        instances = static_cast<void *>(instance_get());
+    }
+#endif
+
+    Instance &instance = *static_cast<Instance *>(instances);
 
     if (instance.get<ThreadScheduler>().is_context_switch_requested())
     {
         ThreadScheduler::yield_higher_priority_thread();
     }
-#endif
 }
 
 template <> inline Instance &Thread::get(void) const

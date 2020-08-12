@@ -1,33 +1,29 @@
-#ifndef CORE_MUTEX_HPP
-#define CORE_MUTEX_HPP
-
-#include <stddef.h>
-#include <stdint.h>
+#ifndef CORE_TIMER_HPP
+#define CORE_TIMER_HPP
 
 #include <vcrtos/config.h>
-#include <vcrtos/mutex.h>
-
-#include "core/list.hpp"
+#include <vcrtos/timer.h>
+#include <vcrtos/cpu.h>
 
 namespace vc {
 
+class TimerScheduler;
 class Instance;
 
 #if !VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
 extern uint64_t instance_raw[];
 #endif
 
-class Mutex : public mutex_t
+class Timer : public timer_t
 {
 public:
-    explicit Mutex(Instance &instance)
+    explicit Timer(Instance &instances, timer_handler_func_t cb, void *args)
+        : next(nullptr)
+        , target(0)
+        , long_target(0)
+        , callback(cb)
+        , arg(args)
     {
-        init(instance);
-    }
-
-    void init(Instance &instances)
-    {
-        queue.next = NULL;
 #if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
         instance = static_cast<void *>(&instances);
 #else
@@ -35,17 +31,9 @@ public:
 #endif
     }
 
-    int try_lock(void) { return set_lock(0); }
-
-    void lock(void) { set_lock(1); }
-
-    void unlock(void);
-
-    void unlock_and_sleeping_current_thread(void);
+    void set
 
 private:
-    int set_lock(int blocking);
-
     template <typename Type> inline Type &get(void) const;
 
 #if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
@@ -57,4 +45,4 @@ private:
 
 } // namespace vc
 
-#endif /* CORE_MUTEX_HPP */
+#endif /* CORE_TIMER_HPP */
