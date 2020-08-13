@@ -8,6 +8,7 @@
 #include <vcrtos/instance.h>
 
 #include "core/thread.hpp"
+#include "core/timer.hpp"
 
 typedef struct instance
 {
@@ -41,12 +42,19 @@ private:
 
     ThreadScheduler thread_scheduler;
 
+    TimerScheduler timer_scheduler;
+
     bool initialized;
 };
 
 template <> inline ThreadScheduler &Instance::get(void)
 {
     return thread_scheduler;
+}
+
+template <> inline TimerScheduler &Instance::get(void)
+{
+    return timer_scheduler;
 }
 
 } // namespace vc

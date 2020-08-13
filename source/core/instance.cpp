@@ -11,6 +11,7 @@ DEFINE_ALIGNED_VAR(instance_raw, sizeof(Instance), uint64_t);
 
 Instance::Instance(void)
     : thread_scheduler()
+    , timer_scheduler(*this)
     , initialized(false)
 {
 #ifdef UNITTEST
