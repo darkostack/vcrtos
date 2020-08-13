@@ -2,7 +2,7 @@
 #define CORE_TIMER_HPP
 
 #include <vcrtos/config.h>
-#include <vcrtos/timer.h>
+#include <vcrtos/xtimer.h>
 #include <vcrtos/cpu.h>
 
 namespace vc {
@@ -13,10 +13,10 @@ class Instance;
 extern uint64_t instance_raw[];
 #endif
 
-class Timer : public timer_t
+class Timer : public xtimer_t
 {
 public:
-    explicit Timer(Instance &instances, timer_handler_func_t cb, void *args)
+    explicit Timer(Instance &instances, xtimer_handler_func_t cb, void *args)
     {
         next = NULL;
         target = 0;
