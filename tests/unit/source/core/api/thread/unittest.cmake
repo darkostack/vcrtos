@@ -9,6 +9,7 @@ set(unittest-sources
     ../../source/core/assert_failure.c
     ../../source/core/api/mutex_api.cpp
     ../../source/core/api/thread_api.cpp
+    ../../source/core/api/xtimer_api.cpp
     stubs/cpu_stub.c
     stubs/thread_stub.c
     stubs/thread_arch_stub.c
