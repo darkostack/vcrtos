@@ -181,6 +181,8 @@ void TimerScheduler::remove(Timer *timer)
         {
             next = lltimer_mask(0xffffffff);
         }
+
+        lltimer_set(next);
     }
     else
     {
