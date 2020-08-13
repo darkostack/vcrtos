@@ -22,8 +22,8 @@ void Timer::set(uint32_t offset)
     }
     else
     {
-        uint32_t target = get<TimerScheduler>().now() + offset;
-        get<TimerScheduler>().set_absolute(this, target);
+        uint32_t set_target = get<TimerScheduler>().now() + offset;
+        get<TimerScheduler>().set_absolute(this, set_target);
     }
 }
 
