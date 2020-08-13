@@ -5,7 +5,7 @@ set(unittest-sources
     ../../source/core/instance.cpp
     ../../source/core/thread.cpp
     ../../source/core/mutex.cpp
-    ../../source/core/timer.cpp
+    ../../source/core/xtimer.cpp
     ../../source/core/msg.cpp
     ../../source/core/assert_failure.c
     stubs/cpu_stub.c

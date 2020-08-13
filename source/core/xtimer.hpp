@@ -13,10 +13,10 @@ class Instance;
 extern uint64_t instance_raw[];
 #endif
 
-class Timer : public xtimer_t
+class XTimer : public xtimer_t
 {
 public:
-    explicit Timer(Instance &instances, xtimer_handler_func_t cb, void *args)
+    explicit XTimer(Instance &instances, xtimer_handler_func_t cb, void *args)
     {
         next = NULL;
         target = 0;
@@ -50,16 +50,16 @@ private:
 #endif
 };
 
-class TimerScheduler
+class XTimerScheduler
 {
 public:
-    explicit TimerScheduler(Instance &instances);
+    explicit XTimerScheduler(Instance &instances);
 
-    void set_absolute(Timer *timer, uint32_t target);
+    void set_absolute(XTimer *timer, uint32_t target);
 
-    void set64(Timer *timer, uint32_t offset, uint32_t long_offset);
+    void set64(XTimer *timer, uint32_t offset, uint32_t long_offset);
 
-    void remove(Timer *timer);
+    void remove(XTimer *timer);
 
     void callback(void);
 
@@ -69,18 +69,18 @@ public:
 
     void spin(uint32_t offset);
 
-    uint32_t get_timer_backoff(void) { return TIMER_BACKOFF; }
+    uint32_t get_timer_backoff(void) { return XTIMER_BACKOFF; }
 
     void sleep64(uint32_t offset, uint32_t long_offset);
 
 private:
     void now_internal(uint32_t *short_term, uint32_t *long_term);
 
-    static void add_timer_to_list(Timer **list_head, Timer *timer);
+    static void add_timer_to_list(XTimer **list_head, XTimer *timer);
 
-    static void add_timer_to_long_list(Timer **list_head, Timer *timer);
+    static void add_timer_to_long_list(XTimer **list_head, XTimer *timer);
 
-    static int remove_timer_from_list(Timer **list_head, Timer *timer);
+    static int remove_timer_from_list(XTimer **list_head, XTimer *timer);
 
     static uint32_t lltimer_now(void);
 
@@ -98,30 +98,30 @@ private:
 
     uint32_t time_left(uint32_t target, uint32_t reference);
 
-    Timer *compare(Timer *timer_a, Timer *timer_b);
+    XTimer *compare(XTimer *timer_a, XTimer *timer_b);
 
-    Timer *merge_lists(Timer *timer_a_head, Timer *timer_b_head);
+    XTimer *merge_lists(XTimer *timer_a_head, XTimer *timer_b_head);
 
     enum
     {
-        TIMER_BACKOFF = VCRTOS_CONFIG_TIMER_BACKOFF,
-        TIMER_OVERHEAD = VCRTOS_CONFIG_TIMER_OVERHEAD,
-        TIMER_ISR_BACKOFF = VCRTOS_CONFIG_TIMER_ISR_BACKOFF,
-        TIMER_PERIODIC_SPIN = (TIMER_BACKOFF * 2),
-        TIMER_PERIODIC_RELATIVE = VCRTOS_CONFIG_TIMER_PERIODIC_RELATIVE,
-        TIMER_MASK = VCRTOS_CONFIG_TIMER_MASK,
-        TIMER_HZ = VCRTOS_CONFIG_TIMER_HZ,
-        TIMER_SHIFT = VCRTOS_CONFIG_TIMER_SHIFT,
+        XTIMER_BACKOFF = VCRTOS_CONFIG_XTIMER_BACKOFF,
+        XTIMER_OVERHEAD = VCRTOS_CONFIG_XTIMER_OVERHEAD,
+        XTIMER_ISR_BACKOFF = VCRTOS_CONFIG_XTIMER_ISR_BACKOFF,
+        XTIMER_PERIODIC_SPIN = (XTIMER_BACKOFF * 2),
+        XTIMER_PERIODIC_RELATIVE = VCRTOS_CONFIG_XTIMER_PERIODIC_RELATIVE,
+        XTIMER_MASK = VCRTOS_CONFIG_XTIMER_MASK,
+        XTIMER_HZ = VCRTOS_CONFIG_XTIMER_HZ,
+        XTIMER_SHIFT = VCRTOS_CONFIG_XTIMER_SHIFT,
     };
 
     int _in_handler;
     uint32_t _long_count;
-#if VCRTOS_CONFIG_TIMER_MASK
+#if VCRTOS_CONFIG_XTIMER_MASK
     uint32_t _high_count;
 #endif
-    Timer *_timer_list_head;
-    Timer *_overflow_list_head;
-    Timer *_long_list_head;
+    XTimer *_timer_list_head;
+    XTimer *_overflow_list_head;
+    XTimer *_long_list_head;
 
     void *_instance;
 };
