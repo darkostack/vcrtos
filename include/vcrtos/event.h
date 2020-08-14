@@ -15,13 +15,12 @@ extern "C" {
 
 typedef struct event event_t;
 
-typedef void (*event_handler_func_t)(event_t *event, void *arg);
+typedef void (*event_handler_func_t)(event_t *event);
 
 struct event
 {
     clist_node_t list_node;
     event_handler_func_t handler;
-    void *arg;
 };
 
 #ifdef __cplusplus
