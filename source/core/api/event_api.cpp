@@ -1,3 +1,4 @@
+#include <vcrtos/config.h>
 #include <vcrtos/event.h>
 #include <vcrtos/thread.h>
 
@@ -5,6 +6,8 @@
 #include "core/instance.hpp"
 #include "core/new.hpp"
 #include "core/thread.hpp"
+
+#if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
 
 using namespace vc;
 
@@ -52,7 +55,7 @@ void event_loop(event_queue_t *queue)
 
 #ifndef UNITTEST
 
-extern "C" static void *_thread_event_handler(void *arg)
+extern "C" void *_thread_event_handler(void *arg)
 {
     EventQueue *queue = static_cast<EventQueue *>(arg);
 
@@ -106,3 +109,5 @@ void auto_init_event_thread(void *instance)
 }
 
 #endif // #ifndef UNITTEST
+
+#endif // #if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
