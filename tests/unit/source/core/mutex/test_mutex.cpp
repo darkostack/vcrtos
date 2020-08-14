@@ -179,6 +179,8 @@ TEST_F(TestMutex, single_instance_mutex_test)
     EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
     EXPECT_EQ(task2_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
 
+    EXPECT_EQ(mutex.peek(), task1_thread->get_pid()); /* this is the head of mutex list */
+
     instance->get<ThreadScheduler>().run();
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
@@ -189,6 +191,64 @@ TEST_F(TestMutex, single_instance_mutex_test)
     mutex.unlock(); /* this will unlocked task1_thread */
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task2_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
+
+    instance->get<ThreadScheduler>().run();
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_RUNNING);
+    EXPECT_EQ(task2_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
+
+    mutex.lock(); /* lock again in task1_thread */
+
+    EXPECT_EQ(mutex.peek(), task2_thread->get_pid()); /* now task2 is the head of mutex list */
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
+    EXPECT_EQ(task2_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
+
+    instance->get<ThreadScheduler>().run();
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
+    EXPECT_EQ(task2_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
+
+    mutex.unlock(); /* this should unlocked task2 not task1 eventhough we just locked mutex in task1 */
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
+    EXPECT_EQ(task2_thread->get_status(), THREAD_STATUS_PENDING);
+
+    instance->get<ThreadScheduler>().run();
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
+    EXPECT_EQ(task2_thread->get_status(), THREAD_STATUS_RUNNING);
+
+    mutex.unlock();
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task2_thread->get_status(), THREAD_STATUS_RUNNING);
+
+    instance->get<ThreadScheduler>().run();
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(task2_thread->get_status(), THREAD_STATUS_RUNNING);
+
+    mutex.lock();
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(task2_thread->get_status(), THREAD_STATUS_MUTEX_BLOCKED);
@@ -220,6 +280,8 @@ TEST_F(TestMutex, single_instance_mutex_test)
     mutex.unlock(); /* no body wait for this mutex, set to null */
 
     EXPECT_EQ(mutex.queue.next, nullptr);
+
+    EXPECT_EQ(mutex.peek(), KERNEL_PID_UNDEF); /* nothing in the mutex list */
 
     /**
      * -------------------------------------------------------------------------

@@ -730,14 +730,14 @@ void ThreadScheduler::event_loop(void)
 
     if (event)
     {
-        event->handler(static_cast<event_t *>(event));
+        event->handler(static_cast<event_t *>(event), event->arg);
     }
 
 #else
 
     while ((event = event_wait()))
     {
-        event->handler(static_cast<event_t *>(event));
+        event->handler(static_cast<event_t *>(event), event->arg);
     }
 
 #endif

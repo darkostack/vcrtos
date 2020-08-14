@@ -46,6 +46,24 @@ int Mutex::set_lock(int blocking)
     }
 }
 
+kernel_pid_t Mutex::peek(void)
+{
+    unsigned state = cpu_irq_disable();
+
+    if (queue.next == NULL)
+    {
+        /* mutex was unlocked or no one waiting this mutex */
+        cpu_irq_restore(state);
+        return KERNEL_PID_UNDEF;
+    }
+
+    List *head = (static_cast<List *>(queue.next));
+
+    Thread *thread = Thread::get_thread_pointer_from_list_member(head);
+
+    return thread->get_pid();
+}
+
 void Mutex::unlock(void)
 {
     unsigned state = cpu_irq_disable();

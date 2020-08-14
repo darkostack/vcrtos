@@ -6,6 +6,7 @@
 
 #include <vcrtos/config.h>
 #include <vcrtos/mutex.h>
+#include <vcrtos/thread.h>
 
 #include "core/list.hpp"
 
@@ -38,6 +39,8 @@ public:
     int try_lock(void) { return set_lock(0); }
 
     void lock(void) { set_lock(1); }
+
+    kernel_pid_t peek(void);
 
     void unlock(void);
 

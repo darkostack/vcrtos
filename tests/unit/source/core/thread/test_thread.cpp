@@ -1213,28 +1213,33 @@ uint32_t event3_handler_counter = 0;
 uint32_t event4_handler_counter = 0;
 uint32_t event5_handler_counter = 0;
 
-extern "C" void _event1_handler(event_t *ev)
+extern "C" void _event1_handler(event_t *ev, void *arg)
 {
+    (void) arg;
     event1_handler_counter += 1;
 }
 
-extern "C" void _event2_handler(event_t *ev)
+extern "C" void _event2_handler(event_t *ev, void *arg)
 {
+    (void) arg;
     event2_handler_counter += 1;
 }
 
-extern "C" void _event3_handler(event_t *ev)
+extern "C" void _event3_handler(event_t *ev, void *arg)
 {
+    (void) arg;
     event3_handler_counter += 1;
 }
 
-extern "C" void _event4_handler(event_t *ev)
+extern "C" void _event4_handler(event_t *ev, void *arg)
 {
+    (void) arg;
     event4_handler_counter += 1;
 }
 
-extern "C" void _event5_handler(event_t *ev)
+extern "C" void _event5_handler(event_t *ev, void *arg)
 {
+    (void) arg;
     event5_handler_counter += 1;
 }
 
@@ -1352,7 +1357,7 @@ TEST_F(TestThread, thread_event_test)
      * ------------------------------------------------------------------------------
      **/
 
-    Event event1 = Event(_event1_handler);
+    Event event1 = Event(_event1_handler, NULL);
 
     instance->get<ThreadScheduler>().event_post(&event1);
 
@@ -1496,7 +1501,7 @@ TEST_F(TestThread, thread_event_test)
 
     EXPECT_EQ(ev, &event1);
 
-    ev->handler(ev); // call event handler
+    ev->handler(ev, ev->arg); // call event handler
 
     EXPECT_EQ(event1_handler_counter, 4);
 
@@ -1519,10 +1524,10 @@ TEST_F(TestThread, thread_event_test)
      * ------------------------------------------------------------------------------
      **/
 
-    Event event2 = Event(_event2_handler);
-    Event event3 = Event(_event3_handler);
-    Event event4 = Event(_event4_handler);
-    Event event5 = Event(_event5_handler);
+    Event event2 = Event(_event2_handler, NULL);
+    Event event3 = Event(_event3_handler, NULL);
+    Event event4 = Event(_event4_handler, NULL);
+    Event event5 = Event(_event5_handler, NULL);
 
     instance->get<ThreadScheduler>().event_post(&event1);
     instance->get<ThreadScheduler>().event_post(&event2);
@@ -1551,19 +1556,19 @@ TEST_F(TestThread, thread_event_test)
     ev = instance->get<ThreadScheduler>().event_get(); /* get event1 */
     EXPECT_NE(ev, nullptr);
     EXPECT_EQ(ev, &event1);
-    ev->handler(ev);
+    ev->handler(ev, ev->arg);
     EXPECT_EQ(event1_handler_counter, 5);
 
     ev = instance->get<ThreadScheduler>().event_get(); /* get event2 */
     EXPECT_NE(ev, nullptr);
     EXPECT_EQ(ev, &event2);
-    ev->handler(ev);
+    ev->handler(ev, ev->arg);
     EXPECT_EQ(event2_handler_counter, 1);
 
     ev = instance->get<ThreadScheduler>().event_get(); /* get event4, event3 was canceled */
     EXPECT_NE(ev, nullptr);
     EXPECT_EQ(ev, &event4);
-    ev->handler(ev);
+    ev->handler(ev, ev->arg);
     EXPECT_EQ(event3_handler_counter, 0);
     EXPECT_EQ(event4_handler_counter, 1);
 
