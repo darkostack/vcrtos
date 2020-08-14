@@ -97,7 +97,43 @@ public:
         handler = func;
     }
 };
+
+class EventQueue : public event_queue_t
+{
+public:
+    explicit EventQueue(Instance &instances)
+    {
+        event_list.next = NULL;
+        waiter = NULL;
+#if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
+        instance = static_cast<void *>(&instances);
+#else
+        (void) instances;
 #endif
+    }
+
+    void claim(void);
+
+    void event_post(Event *event);
+
+    void event_cancel(Event *event);
+
+    Event *event_get(void);
+
+    Event *event_wait(void);
+
+    void event_loop(void);
+
+private:
+    template <typename Type> inline Type &get(void) const;
+
+#if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
+    Instance &get_instance(void) const { return *static_cast<Instance *>(instance); }
+#else
+    Instance &get_instance(void) const { return *reinterpret_cast<Instance *>(&instance_raw); }
+#endif
+};
+#endif // #if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
 
 class ThreadScheduler : public Clist
 {
@@ -108,9 +144,6 @@ public:
         , current_active_thread(NULL)
         , current_active_pid(KERNEL_PID_UNDEF)
         , runqueue_bitcache(0)
-#if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
-        , event_waiter(NULL)
-#endif
     {
         for (kernel_pid_t i = KERNEL_PID_FIRST; i <= KERNEL_PID_LAST; ++i)
         {
@@ -174,20 +207,6 @@ public:
     int thread_flags_wake(Thread *thread);
 #endif
 
-#if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
-    void event_claim(void);
-
-    void event_post(Event *event);
-
-    void event_cancel(Event *event);
-
-    Event *event_get(void);
-
-    Event *event_wait(void);
-
-    void event_loop(void);
-#endif
-
 private:
     uint32_t get_runqueue_bitcache(void) { return runqueue_bitcache; }
 
@@ -224,12 +243,6 @@ private:
     uint32_t runqueue_bitcache;
 
     scheduler_stat_t scheduler_stats[KERNEL_PID_LAST + 1];
-
-#if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
-    Clist event_list;
-
-    Thread *event_waiter;
-#endif
 };
 
 } // namespace vc

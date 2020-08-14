@@ -4,6 +4,7 @@ set(unittest-includes ${unittest-includes}
 set(unittest-sources
     ../../source/core/instance.cpp
     ../../source/core/thread.cpp
+    ../../source/core/api/event_api.cpp
     ../../source/core/mutex.cpp
     ../../source/core/xtimer.cpp
     ../../source/core/assert_failure.c

@@ -64,35 +64,8 @@ Instance &Instance::get(void)
 
 #endif /* #if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE */
 
-#ifndef UNITTEST
-#if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
-char event_queue_stack[THREAD_EVENT_STACK_SIZE];
-
-extern "C" void *thread_event_handler(void *arg)
-{
-    Instance *instance = static_cast<Instance *>(arg);
-
-    instance->get<ThreadScheduler>().event_claim();
-
-    instance->get<ThreadScheduler>().event_loop();
-
-    /* should not reach here */
-
-    return NULL;
-}
-#endif
-#endif
-
 void Instance::after_init(void)
 {
-#ifndef UNITTEST
-#if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
-    Thread::init(*this, event_queue_stack, ARRAY_LENGTH(event_queue_stack),
-                 THREAD_EVENT_PRIORITY, 0, thread_event_handler,
-                 static_cast<void *>(this), "event");
-#endif
-#endif
-
     initialized = true;
 }
 

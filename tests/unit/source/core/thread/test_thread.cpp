@@ -1238,6 +1238,18 @@ extern "C" void _event5_handler(event_t *ev)
     event5_handler_counter += 1;
 }
 
+typedef struct
+{
+    event_t super;
+    unsigned data;
+} custom_event_t;
+
+extern "C" void _custom_event_handler(event_t *ev)
+{
+    custom_event_t *custom_event = reinterpret_cast<custom_event_t *>(ev);
+    EXPECT_EQ(custom_event->data, 0xd);
+}
+
 TEST_F(TestThread, thread_event_test)
 {
     instance_reset();
@@ -1330,8 +1342,13 @@ TEST_F(TestThread, thread_event_test)
      * ------------------------------------------------------------------------------
      **/
 
-    instance->get<ThreadScheduler>().event_claim();
-    instance->get<ThreadScheduler>().event_loop();
+    EXPECT_EQ(sizeof(EventQueue), sizeof(event_queue_t));
+    
+    /* create event queue */
+    EventQueue queue = EventQueue(*instance);
+
+    queue.claim();
+    queue.event_loop();
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1354,7 +1371,7 @@ TEST_F(TestThread, thread_event_test)
 
     Event event1 = Event(_event1_handler);
 
-    instance->get<ThreadScheduler>().event_post(&event1);
+    queue.event_post(&event1);
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1366,14 +1383,14 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
-    instance->get<ThreadScheduler>().event_loop();
+    queue.event_loop();
 
     EXPECT_EQ(event1_handler_counter, 1);
 
     /* Note: at this point event is succesfully received and event handler was
      * called to increase the event_handler_counter */
 
-    Event *ev = instance->get<ThreadScheduler>().event_wait();
+    Event *ev = queue.event_wait();
 
     /* Note: there is no event in the queue */
 
@@ -1383,7 +1400,7 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
-    instance->get<ThreadScheduler>().event_loop();
+    queue.event_loop();
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1395,7 +1412,7 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_FLAG_BLOCKED_ANY);
 
-    instance->get<ThreadScheduler>().event_post(&event1);
+    queue.event_post(&event1);
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1407,13 +1424,13 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
-    instance->get<ThreadScheduler>().event_loop();
+    queue.event_loop();
 
     EXPECT_EQ(event1_handler_counter, 2);
 
     EXPECT_NE(event_thread->flags, 0);
 
-    instance->get<ThreadScheduler>().event_loop();
+    queue.event_loop();
 
     /* Note: at this point nothing expected to be happen, because
      * event_thread->flags is not clear it before. It will clear the
@@ -1427,7 +1444,7 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
-    instance->get<ThreadScheduler>().event_loop();
+    queue.event_loop();
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1439,7 +1456,7 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_FLAG_BLOCKED_ANY);
 
-    instance->get<ThreadScheduler>().event_post(&event1);
+    queue.event_post(&event1);
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1451,7 +1468,7 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
-    instance->get<ThreadScheduler>().event_loop();
+    queue.event_loop();
 
     EXPECT_EQ(event1_handler_counter, 3);
 
@@ -1463,7 +1480,7 @@ TEST_F(TestThread, thread_event_test)
 
     EXPECT_EQ(event_thread->flags, 0);
 
-    instance->get<ThreadScheduler>().event_loop();
+    queue.event_loop();
 
     /* Note: calling event_loop() now will effective immediately because
      * THREAD_FLAG_EVENT was cleared */
@@ -1478,7 +1495,7 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_FLAG_BLOCKED_ANY);
 
-    instance->get<ThreadScheduler>().event_post(&event1);
+    queue.event_post(&event1);
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1490,7 +1507,7 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
-    ev = instance->get<ThreadScheduler>().event_get();
+    ev = queue.event_get();
 
     EXPECT_NE(ev, nullptr);
 
@@ -1500,8 +1517,8 @@ TEST_F(TestThread, thread_event_test)
 
     EXPECT_EQ(event1_handler_counter, 4);
 
-    instance->get<ThreadScheduler>().event_loop(); /* it will clear the THREAD_FLAG_EVENT first */
-    instance->get<ThreadScheduler>().event_loop();
+    queue.event_loop(); /* it will clear the THREAD_FLAG_EVENT first */
+    queue.event_loop();
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1524,11 +1541,11 @@ TEST_F(TestThread, thread_event_test)
     Event event4 = Event(_event4_handler);
     Event event5 = Event(_event5_handler);
 
-    instance->get<ThreadScheduler>().event_post(&event1);
-    instance->get<ThreadScheduler>().event_post(&event2);
-    instance->get<ThreadScheduler>().event_post(&event3);
-    instance->get<ThreadScheduler>().event_post(&event4);
-    instance->get<ThreadScheduler>().event_post(&event5);
+    queue.event_post(&event1);
+    queue.event_post(&event2);
+    queue.event_post(&event3);
+    queue.event_post(&event4);
+    queue.event_post(&event5);
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1536,7 +1553,7 @@ TEST_F(TestThread, thread_event_test)
 
     /* cancel event 3 */
 
-    instance->get<ThreadScheduler>().event_cancel(&event3);
+    queue.event_cancel(&event3);
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1548,35 +1565,35 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
-    ev = instance->get<ThreadScheduler>().event_get(); /* get event1 */
+    ev = queue.event_get(); /* get event1 */
     EXPECT_NE(ev, nullptr);
     EXPECT_EQ(ev, &event1);
     ev->handler(ev);
     EXPECT_EQ(event1_handler_counter, 5);
 
-    ev = instance->get<ThreadScheduler>().event_get(); /* get event2 */
+    ev = queue.event_get(); /* get event2 */
     EXPECT_NE(ev, nullptr);
     EXPECT_EQ(ev, &event2);
     ev->handler(ev);
     EXPECT_EQ(event2_handler_counter, 1);
 
-    ev = instance->get<ThreadScheduler>().event_get(); /* get event4, event3 was canceled */
+    ev = queue.event_get(); /* get event4, event3 was canceled */
     EXPECT_NE(ev, nullptr);
     EXPECT_EQ(ev, &event4);
     ev->handler(ev);
     EXPECT_EQ(event3_handler_counter, 0);
     EXPECT_EQ(event4_handler_counter, 1);
 
-    instance->get<ThreadScheduler>().event_loop(); /* this will get event5 */
+    queue.event_loop(); /* this will get event5 */
 
     EXPECT_EQ(event5_handler_counter, 1);
 
-    ev = instance->get<ThreadScheduler>().event_get(); /* no event available */
+    ev = queue.event_get(); /* no event available */
     EXPECT_EQ(ev, nullptr);
 
     instance->get<ThreadScheduler>().thread_flags_clear(0xffff);
 
-    instance->get<ThreadScheduler>().event_loop();
+    queue.event_loop();
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1594,16 +1611,16 @@ TEST_F(TestThread, thread_event_test)
      * ------------------------------------------------------------------------------
      **/
 
-    instance->get<ThreadScheduler>().event_post(&event3);
-    instance->get<ThreadScheduler>().event_post(&event4);
-    instance->get<ThreadScheduler>().event_post(&event5);
+    queue.event_post(&event3);
+    queue.event_post(&event4);
+    queue.event_post(&event5);
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_PENDING);
 
-    instance->get<ThreadScheduler>().event_cancel(&event3);
-    instance->get<ThreadScheduler>().event_post(&event3);
+    queue.event_cancel(&event3);
+    queue.event_post(&event3);
 
     /* Note: after canceled and repost again, event3 will at the last queue */
 
@@ -1617,20 +1634,20 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
-    instance->get<ThreadScheduler>().event_loop(); /* this will get event4 */
+    queue.event_loop(); /* this will get event4 */
     EXPECT_EQ(event4_handler_counter, 2);
 
-    instance->get<ThreadScheduler>().event_loop(); /* this will get event5 */
+    queue.event_loop(); /* this will get event5 */
     EXPECT_EQ(event5_handler_counter, 2);
 
-    instance->get<ThreadScheduler>().event_loop(); /* this will get event3 */
+    queue.event_loop(); /* this will get event3 */
     EXPECT_EQ(event3_handler_counter, 1);
 
-    ev = instance->get<ThreadScheduler>().event_get(); /* no event left */
+    ev = queue.event_get(); /* no event left */
     EXPECT_EQ(ev, nullptr);
 
-    instance->get<ThreadScheduler>().event_loop();
-    instance->get<ThreadScheduler>().event_loop();
+    queue.event_loop();
+    queue.event_loop();
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1639,6 +1656,37 @@ TEST_F(TestThread, thread_event_test)
     instance->get<ThreadScheduler>().run();
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_FLAG_BLOCKED_ANY);
+
+    custom_event_t custom_ev = {
+        .super.list_node.next = NULL,
+        .super.handler = _custom_event_handler,
+        .data = 0xd
+    };
+
+    queue.event_post(reinterpret_cast<Event *>(&custom_ev));
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_PENDING);
+
+    instance->get<ThreadScheduler>().run();
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
+
+    queue.event_loop();
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
+    EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
+
+    queue.event_loop();
+    queue.event_loop();
+
+    EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_FLAG_BLOCKED_ANY);
 }

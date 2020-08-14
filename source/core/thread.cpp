@@ -622,14 +622,13 @@ thread_flags_t ThreadScheduler::thread_flags_wait_one(thread_flags_t mask)
 
 #if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
 
-void ThreadScheduler::event_claim(void)
+void EventQueue::claim(void)
 {
-    vcassert(event_waiter == NULL);
-
-    event_waiter = get_current_active_thread();
+    vcassert(waiter == NULL);
+    waiter = static_cast<thread_t *>(get<ThreadScheduler>().get_current_active_thread());
 }
 
-void ThreadScheduler::event_post(Event *event)
+void EventQueue::event_post(Event *event)
 {
     vcassert(event);
 
@@ -637,37 +636,37 @@ void ThreadScheduler::event_post(Event *event)
 
     if (!event->list_node.next)
     {
-        event_list.right_push(static_cast<Clist *>(&event->list_node));
+        (static_cast<Clist *>(&event_list))->right_push(static_cast<Clist *>(&event->list_node));
     }
 
-    Thread *thread_waiter = event_waiter;
+    Thread *thread_waiter = static_cast<Thread *>(waiter);
 
     cpu_irq_restore(state);
 
     if (thread_waiter != NULL)
     {
-        thread_flags_set(thread_waiter, THREAD_FLAG_EVENT);
+        get<ThreadScheduler>().thread_flags_set(thread_waiter, THREAD_FLAG_EVENT);
     }
 }
 
-void ThreadScheduler::event_cancel(Event *event)
+void EventQueue::event_cancel(Event *event)
 {
     vcassert(event);
 
     unsigned state = cpu_irq_disable();
 
-    event_list.remove(static_cast<Clist *>(&event->list_node));
+    (static_cast<Clist *>(&event_list))->remove(static_cast<Clist *>(&event->list_node));
 
     event->list_node.next = NULL;
 
     cpu_irq_restore(state);
 }
 
-Event *ThreadScheduler::event_get(void)
+Event *EventQueue::event_get(void)
 {
     unsigned state = cpu_irq_disable();
 
-    Event *result = reinterpret_cast<Event *>(event_list.left_pop());
+    Event *result = reinterpret_cast<Event *>((static_cast<Clist *>(&event_list))->left_pop());
 
     cpu_irq_restore(state);
 
@@ -679,19 +678,19 @@ Event *ThreadScheduler::event_get(void)
     return result;
 }
 
-Event  *ThreadScheduler::event_wait(void)
+Event  *EventQueue::event_wait(void)
 {
     Event *result = NULL;
 
 #ifdef UNITTEST
 
     unsigned state = cpu_irq_disable();
-    result = reinterpret_cast<Event *>(event_list.left_pop());
+    result = reinterpret_cast<Event *>((static_cast<Clist *>(&event_list))->left_pop());
     cpu_irq_restore(state);
 
     if (result == NULL)
     {
-        thread_flags_wait_any(THREAD_FLAG_EVENT);
+        get<ThreadScheduler>().thread_flags_wait_any(THREAD_FLAG_EVENT);
     }
     else
     {
@@ -703,12 +702,12 @@ Event  *ThreadScheduler::event_wait(void)
     do
     {
         unsigned state = cpu_irq_disable();
-        result = reinterpret_cast<Event *>(event_list.left_pop());
+        result = reinterpret_cast<Event *>((static_cast<Clist *>(&event_list))->left_pop());
         cpu_irq_restore(state);
 
         if (result == NULL)
         {
-            thread_flags_wait_any(THREAD_FLAG_EVENT);
+            get<ThreadScheduler>().thread_flags_wait_any(THREAD_FLAG_EVENT);
         }
 
     } while (result == NULL);
@@ -720,7 +719,7 @@ Event  *ThreadScheduler::event_wait(void)
     return result;
 }
 
-void ThreadScheduler::event_loop(void)
+void EventQueue::event_loop(void)
 {
     Event *event = NULL;
 
@@ -768,6 +767,16 @@ template <> inline Instance &Thread::get(void) const
 }
 
 template <typename Type> inline Type &Thread::get(void) const
+{
+    return get_instance().get<Type>();
+}
+
+template <> inline Instance &EventQueue::get(void) const
+{
+    return get_instance();
+}
+
+template <typename Type> inline Type &EventQueue::get(void) const
 {
     return get_instance().get<Type>();
 }
