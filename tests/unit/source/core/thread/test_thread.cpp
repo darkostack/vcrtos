@@ -1689,4 +1689,10 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_FLAG_BLOCKED_ANY);
+
+    struct process {
+        thread_t super;
+    };
+
+    EXPECT_EQ(sizeof(struct process), sizeof(thread_t));
 }
