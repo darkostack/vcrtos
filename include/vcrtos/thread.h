@@ -84,6 +84,10 @@ void thread_yield(void *instance);
 
 thread_t *thread_current(void *instance);
 
+void thread_sleep(void *instance);
+
+int thread_wakeup(void *instance, kernel_pid_t pid);
+
 kernel_pid_t thread_current_pid(void *instance);
 
 thread_t *thread_get_from_scheduler(void *instance, kernel_pid_t pid);

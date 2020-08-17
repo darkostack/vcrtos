@@ -49,6 +49,18 @@ thread_t *thread_current(void *instance)
     return static_cast<thread_t *>(thread);
 }
 
+void thread_sleep(void *instance)
+{
+    Instance &instances = *static_cast<Instance *>(instance);
+    instances.get<ThreadScheduler>().sleeping_current_thread();
+}
+
+int thread_wakeup(void *instance, kernel_pid_t pid)
+{
+    Instance &instances = *static_cast<Instance *>(instance);
+    return instances.get<ThreadScheduler>().wakeup_thread(pid);
+}
+
 kernel_pid_t thread_current_pid(void *instance)
 {
     Instance &instances = *static_cast<Instance *>(instance);
