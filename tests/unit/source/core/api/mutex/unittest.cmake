@@ -13,6 +13,7 @@ set(unittest-sources
     stubs/cpu_stub.c
     stubs/thread_stub.c
     stubs/thread_arch_stub.c
+    stubs/xtimer_stub.c
 )
 
 set(unittest-test-sources
