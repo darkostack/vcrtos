@@ -43,8 +43,6 @@ event_t *event_wait(event_queue_t *queue);
 
 void event_loop(event_queue_t *queue);
 
-void auto_init_event_thread(void *instance);
-
 #ifdef __cplusplus
 }
 #endif
