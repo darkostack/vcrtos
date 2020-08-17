@@ -1,4 +1,5 @@
 #include <vcrtos/assert.h>
+#include <vcrtos/xtimer.h>
 
 #include "core/instance.hpp"
 #include "core/thread.hpp"
@@ -237,18 +238,30 @@ void ThreadScheduler::run(void)
 
     if (current_thread == next_thread) return;
 
+    uint32_t time_now = xtimer_now_usec(instance);
+
     if (current_thread != NULL)
     {
         if (current_thread->get_status() == THREAD_STATUS_RUNNING)
         {
             current_thread->set_status(THREAD_STATUS_PENDING);
         }
+
+        scheduler_stat_t *active_stat = &scheduler_stats[current_thread->get_pid()];
+
+        if (active_stat->last_start)
+        {
+            active_stat->runtime_ticks += time_now - active_stat->last_start;
+        }
     }
 
+    scheduler_stat_t *next_stat = &scheduler_stats[next_thread->get_pid()];
+
+    next_stat->last_start = time_now;
+    next_stat->schedules++;
+
     next_thread->set_status(THREAD_STATUS_RUNNING);
-
     set_current_active_thread(next_thread);
-
     set_current_active_pid(next_thread->get_pid());
 }
 

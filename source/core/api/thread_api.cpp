@@ -61,3 +61,36 @@ thread_t *thread_get_from_scheduler(void *instance, kernel_pid_t pid)
     Thread *thread = instances.get<ThreadScheduler>().get_thread_from_scheduler(pid);
     return static_cast<thread_t *>(thread);
 }
+
+uint64_t thread_get_runtime_ticks(void *instance, kernel_pid_t pid)
+{
+    Instance &instances = *static_cast<Instance *>(instance);
+    return instances.get<ThreadScheduler>().get_thread_runtime_ticks(pid);
+}
+
+const char *thread_status_to_string(thread_status_t status)
+{
+    return ThreadScheduler::thread_status_to_string(status);
+}
+
+uintptr_t thread_measure_stack_free(char *stack)
+{
+    uintptr_t *stackp = (uintptr_t *)stack;
+
+    /* assume that the comparison fails before or after end of stack */
+    /* assume that the stack grows "downwards" */
+    while (*stackp == (uintptr_t)stackp)
+    {
+        stackp++;
+    }
+
+    uintptr_t space_free = (uintptr_t)stackp - (uintptr_t)stack;
+
+    return space_free;
+}
+
+unsigned thread_get_schedules_stat(void *instance, kernel_pid_t pid)
+{
+    Instance &instances = *static_cast<Instance *>(instance);
+    return instances.get<ThreadScheduler>().get_thread_schedules_stat(pid);
+}

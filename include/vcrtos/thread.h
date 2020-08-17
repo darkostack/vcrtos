@@ -88,15 +88,23 @@ kernel_pid_t thread_current_pid(void *instance);
 
 thread_t *thread_get_from_scheduler(void *instance, kernel_pid_t pid);
 
+uint64_t thread_get_runtime_ticks(void *instance, kernel_pid_t pid);
+
+const char *thread_status_to_string(thread_status_t status);
+
+uintptr_t thread_measure_stack_free(char *stack);
+
+unsigned thread_get_schedules_stat(void *instance, kernel_pid_t pid);
+
 char *thread_arch_stack_init(thread_handler_func_t func, void *arg, void *stack_start, int size);
 
 void thread_arch_stack_print(void);
 
-int thread_arch_stack_usage(void);
+int thread_arch_isr_stack_usage(void);
 
 void *thread_arch_isr_stack_pointer(void);
 
-void *thread_arch_stack_start(void);
+void *thread_arch_isr_stack_start(void);
 
 #ifdef __cplusplus
 }

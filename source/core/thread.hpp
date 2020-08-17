@@ -138,7 +138,7 @@ private:
 class ThreadScheduler : public Clist
 {
 public:
-    ThreadScheduler(void)
+    ThreadScheduler(Instance &instances)
         : numof_threads_in_scheduler(0)
         , context_switch_request(0)
         , current_active_thread(NULL)
@@ -149,6 +149,8 @@ public:
         {
             scheduled_threads[i] = NULL;
         }
+
+        instance = static_cast<void *>(&instances);
     }
 
     Thread *get_thread_from_scheduler(kernel_pid_t pid) { return scheduled_threads[pid]; }
@@ -174,6 +176,10 @@ public:
     kernel_pid_t get_current_active_pid(void) { return current_active_pid; }
 
     void set_current_active_pid(kernel_pid_t pid) { current_active_pid = pid; }
+
+    uint64_t get_thread_runtime_ticks(kernel_pid_t pid) { return scheduler_stats[pid].runtime_ticks; }
+
+    unsigned get_thread_schedules_stat(kernel_pid_t pid) { return scheduler_stats[pid].schedules; }
 
     void run(void);
 
@@ -243,6 +249,8 @@ private:
     uint32_t runqueue_bitcache;
 
     scheduler_stat_t scheduler_stats[KERNEL_PID_LAST + 1];
+
+    void *instance;
 };
 
 } // namespace vc

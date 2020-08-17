@@ -11,7 +11,7 @@ DEFINE_ALIGNED_VAR(instance_raw, sizeof(Instance), uint64_t);
 #endif
 
 Instance::Instance(void)
-    : thread_scheduler()
+    : thread_scheduler(*this)
     , xtimer_scheduler(*this)
     , initialized(false)
 {
