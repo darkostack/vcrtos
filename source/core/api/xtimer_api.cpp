@@ -51,3 +51,9 @@ void xtimer_sleep_usec64(void *instances, uint64_t usec)
     Instance &instance = *static_cast<Instance *>(instances);
     instance.get<XTimerScheduler>().sleep64(static_cast<uint32_t>(usec), static_cast<uint32_t>(usec >> 32));
 }
+
+void xtimer_remove(xtimer_t *timer)
+{
+    XTimer &xtimer = *static_cast<XTimer *>(timer);
+    xtimer.remove();
+}

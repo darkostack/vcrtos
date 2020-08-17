@@ -38,6 +38,8 @@ void xtimer_sleep_usec(void *instance, uint32_t usec);
 
 void xtimer_sleep_usec64(void *instance, uint64_t usec);
 
+void xtimer_remove(xtimer_t *timer);
+
 #ifdef __cplusplus
 }
 #endif
