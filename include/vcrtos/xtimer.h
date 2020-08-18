@@ -32,7 +32,7 @@ uint64_t xtimer_now_usec64(void *instance);
 
 void xtimer_set(xtimer_t *timer, uint32_t offset);
 
-void xtimer_set64(xtimer_t *timer, uint32_t offset, uint32_t long_offset);
+void xtimer_set64(xtimer_t *timer, uint64_t offset);
 
 void xtimer_sleep_usec(void *instance, uint32_t usec);
 

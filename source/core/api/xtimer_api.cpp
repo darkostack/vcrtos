@@ -34,10 +34,10 @@ void xtimer_set(xtimer_t *timer, uint32_t offset)
     xtimer.set(offset);
 }
 
-void xtimer_set64(xtimer_t *timer, uint32_t offset, uint32_t long_offset)
+void xtimer_set64(xtimer_t *timer, uint64_t offset)
 {
     XTimer &xtimer = *static_cast<XTimer *>(timer);
-    xtimer.set64(offset, long_offset);
+    xtimer.set64(offset, offset >> 32);
 }
 
 void xtimer_sleep_usec(void *instances, uint32_t usec)
