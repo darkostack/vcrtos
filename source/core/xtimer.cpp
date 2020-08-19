@@ -66,12 +66,14 @@ XTimerScheduler::XTimerScheduler(Instance &instances)
     , _overflow_list_head(nullptr)
     , _long_list_head(nullptr)
 {
+#if !VCRTOS_CONFIG_PLATFORM_LINUX
     lltimer_init(VCRTOS_CONFIG_XTIMER_DEV,
                  XTIMER_HZ,
                  lltimer_callback,
                  static_cast<void *>(&instances));
 
     lltimer_set(0xffffffff);
+#endif
 
     _instance = static_cast<void *>(&instances);
 }
