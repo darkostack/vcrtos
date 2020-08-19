@@ -19,6 +19,26 @@ kernel_pid_t thread_create(void *instance,
     return thread->get_pid();
 }
 
+int thread_scheduler_get_context_switch_request(void *instance)
+{
+    Instance &instances = *static_cast<Instance *>(instance);
+    return instances.get<ThreadScheduler>().is_context_switch_requested();
+}
+
+void thread_scheduler_set_context_switch_request(void *instance, unsigned state)
+{
+    Instance &instances = *static_cast<Instance *>(instance);
+
+    if (state)
+    {
+        instances.get<ThreadScheduler>().enable_context_switch_request();
+    }
+    else
+    {
+        instances.get<ThreadScheduler>().disable_context_switch_request();
+    }
+}
+
 void thread_scheduler_run(void *instance)
 {
     Instance &instances = *static_cast<Instance *>(instance);

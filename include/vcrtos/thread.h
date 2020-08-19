@@ -74,6 +74,10 @@ kernel_pid_t thread_create(void *instance,
                            void *arg,
                            const char *name);
 
+int thread_scheduler_get_context_switch_request(void *instance);
+
+void thread_scheduler_set_context_switch_request(void *instance, unsigned state);
+
 void thread_scheduler_run(void *instance);
 
 void thread_exit(void *instance);
@@ -109,6 +113,8 @@ int thread_arch_isr_stack_usage(void);
 void *thread_arch_isr_stack_pointer(void);
 
 void *thread_arch_isr_stack_start(void);
+
+void thread_arch_yield_higher(void);
 
 #ifdef __cplusplus
 }

@@ -321,7 +321,7 @@ void ThreadScheduler::context_switch(uint8_t priority_to_switch)
 
 void ThreadScheduler::yield_higher_priority_thread(void)
 {
-    cpu_trigger_pendsv_interrupt();
+    thread_arch_yield_higher();
 }
 
 /* Source: http://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightMultLookup */
