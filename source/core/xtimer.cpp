@@ -62,9 +62,9 @@ XTimerScheduler::XTimerScheduler(Instance &instances)
 #if VCRTOS_CONFIG_XTIMER_MASK
     , _high_count(0)
 #endif
-    , _timer_list_head(nullptr)
-    , _overflow_list_head(nullptr)
-    , _long_list_head(nullptr)
+    , _timer_list_head(NULL)
+    , _overflow_list_head(NULL)
+    , _long_list_head(NULL)
 {
 #if !VCRTOS_CONFIG_PLATFORM_LINUX
     lltimer_init(VCRTOS_CONFIG_XTIMER_DEV,

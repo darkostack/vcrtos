@@ -784,6 +784,7 @@ template <typename Type> inline Type &Thread::get(void) const
     return get_instance().get<Type>();
 }
 
+#if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
 template <> inline Instance &EventQueue::get(void) const
 {
     return get_instance();
@@ -793,5 +794,6 @@ template <typename Type> inline Type &EventQueue::get(void) const
 {
     return get_instance().get<Type>();
 }
+#endif
 
 } // namespace vc

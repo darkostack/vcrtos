@@ -12,9 +12,9 @@ namespace vc {
 namespace cli {
 
 Interpreter::Interpreter(Instance &instances)
-    : _user_commands(nullptr)
+    : _user_commands(NULL)
     , _user_commands_length(0)
-    , _server(nullptr)
+    , _server(NULL)
 {
 #if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
     instance = static_cast<void *>(&instances);
