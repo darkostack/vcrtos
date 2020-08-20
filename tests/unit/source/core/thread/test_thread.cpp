@@ -1659,11 +1659,11 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_FLAG_BLOCKED_ANY);
 
-    custom_event_t custom_ev = {
-        .super.list_node.next = NULL,
-        .super.handler = _custom_event_handler,
-        .data = 0xd
-    };
+    custom_event_t custom_ev;
+
+    custom_ev.super.list_node.next = NULL;
+    custom_ev.super.handler = _custom_event_handler;
+    custom_ev.data = 0xd;
 
     queue.event_post(reinterpret_cast<Event *>(&custom_ev));
 
