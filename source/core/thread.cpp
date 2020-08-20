@@ -3,7 +3,7 @@
 
 #include "core/instance.hpp"
 #include "core/thread.hpp"
-#include "core/code_utils.hpp"
+#include "core/code_utils.h"
 
 namespace vc {
 
@@ -164,7 +164,7 @@ void Thread::add_to_list(List *list)
 Thread *Thread::get_thread_pointer_from_list_member(List *list)
 {
     list_node_t *node = static_cast<list_node_t *>(list);
-    thread_t *thread = CONTAINER_OF(node, thread_t, runqueue_entry);
+    thread_t *thread = container_of(node, thread_t, runqueue_entry);
     return static_cast<Thread *>(thread);
 }
 
@@ -363,7 +363,7 @@ Thread *ThreadScheduler::get_next_thread_from_runqueue(void)
 
     list_node_t *thread_ptr_in_queue = static_cast<list_node_t *>((scheduler_runqueue[thread_idx].next)->next);
 
-    thread_t *thread = CONTAINER_OF(thread_ptr_in_queue, thread_t, runqueue_entry);
+    thread_t *thread = container_of(thread_ptr_in_queue, thread_t, runqueue_entry);
 
     return static_cast<Thread *>(thread);
 }

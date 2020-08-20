@@ -1,5 +1,5 @@
 #include "core/instance.hpp"
-#include "core/code_utils.hpp"
+#include "core/code_utils.h"
 #include "core/thread.hpp"
 #include "core/xtimer.hpp"
 #include "core/new.hpp"

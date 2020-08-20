@@ -1,7 +1,12 @@
-#ifndef CORE_CODE_UTILS_HPP
-#define CORE_CODE_UTILS_HPP
+#ifndef CORE_CODE_UTILS_H
+#define CORE_CODE_UTILS_H
 
 #include <stdbool.h>
+#include <stddef.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define ARRAY_LENGTH(array) (sizeof(array) / sizeof(array[0]))
 
@@ -12,9 +17,16 @@
 #define DEFINE_ALIGNED_VAR(name, size, align_type) \
     align_type name[(((size) + (sizeof(align_type) - 1)) / sizeof(align_type))]
 
-#define CONTAINER_OF(ptr, type, member) ({                    \
-        const typeof( ((type *)0)->member ) *__mptr = (ptr);  \
-        (type *)( (char *)__mptr - offsetof(type,member) );})
+#if defined __GNUC__
+#define container_of(PTR, TYPE, MEMBER) \
+    (__extension__ ({ \
+        __extension__ const __typeof__ (((TYPE *) 0)->MEMBER) *__m____ = (PTR); \
+        ((TYPE *) ((char *) __m____ - offsetof(TYPE, MEMBER))); \
+    }))
+#else
+#define container_of(PTR, TYPE, MEMBER) \
+        ((TYPE *) ((char *) (PTR) - offsetof(TYPE, MEMBER)))
+#endif
 
 #define SUCCESS_OR_EXIT(status) \
     do                          \
@@ -50,4 +62,8 @@
         }                              \
     } while (false)
 
-#endif /* CORE_CODE_UTILS_HPP */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* CORE_CODE_UTILS_H */

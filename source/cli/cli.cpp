@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "core/code_utils.hpp"
+#include "core/code_utils.h"
 #include "core/instance.hpp"
 
 #include "cli/cli.hpp"
