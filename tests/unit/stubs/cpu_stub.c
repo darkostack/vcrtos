@@ -48,6 +48,11 @@ void cpu_trigger_pendsv_interrupt(void)
     is_pendsv_interrupt_triggered = 1;
 }
 
+void thread_arch_yield_higher(void)
+{
+    cpu_trigger_pendsv_interrupt();
+}
+
 void cpu_switch_context_exit(void)
 {
 }

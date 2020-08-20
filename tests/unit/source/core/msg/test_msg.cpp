@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "core/instance.hpp"
-#include "core/code_utils.hpp"
+#include "core/code_utils.h"
 #include "core/mutex.hpp"
 #include "core/msg.hpp"
 

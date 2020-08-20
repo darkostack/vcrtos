@@ -3,7 +3,7 @@
 #include <vcrtos/instance.h>
 
 #include "core/instance.hpp"
-#include "core/code_utils.hpp"
+#include "core/code_utils.h"
 
 using namespace vc;
 
