@@ -46,7 +46,7 @@ extern "C" void *thread_cli_uart_handler(void *arg)
     return NULL;
 }
 
-char _cli_uart_stack[VCRTOS_CONFIG_CLI_UART_STACK_SIZE];
+char _cli_uart_stack[VCRTOS_CONFIG_CLI_UART_THREAD_STACK_SIZE];
 
 extern "C" void vccli_uart_init(void *instance)
 {
