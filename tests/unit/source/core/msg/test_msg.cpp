@@ -371,7 +371,12 @@ TEST_F(TestMsg, single_send_and_receive_msg_test)
 
     EXPECT_TRUE(instance->get<ThreadScheduler>().is_context_switch_requested());
 
-    cpu_end_of_isr(instance);
+    /* this equal to cpu_end_of_isr() */
+
+    if (instance->get<ThreadScheduler>().is_context_switch_requested())
+    {
+        ThreadScheduler::yield_higher_priority_thread();
+    }
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -395,7 +400,12 @@ TEST_F(TestMsg, single_send_and_receive_msg_test)
 
     EXPECT_EQ(msg5.send(task1_thread->get_pid()), 0);
 
-    cpu_end_of_isr(instance);
+    /* this equal to cpu_end_of_isr() */
+
+    if (instance->get<ThreadScheduler>().is_context_switch_requested())
+    {
+        ThreadScheduler::yield_higher_priority_thread();
+    }
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -540,7 +550,12 @@ TEST_F(TestMsg, single_send_and_receive_msg_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(task1_thread->get_status(), THREAD_STATUS_PENDING);
 
-    cpu_end_of_isr(instance);
+    /* this equal to cpu_end_of_isr() */
+
+    if (instance->get<ThreadScheduler>().is_context_switch_requested())
+    {
+        ThreadScheduler::yield_higher_priority_thread();
+    }
 
     test_helper_reset_cpu_in_isr(); /* ---------------------------------- exit Isr */
 
