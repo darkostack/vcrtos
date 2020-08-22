@@ -22,7 +22,7 @@ static void _callback_unlock_mutex(void *arg)
 
 void ztimer_sleep(ztimer_clock_t *clock, uint32_t duration)
 {
-    assert(!irq_is_in());
+    assert(!cpu_is_in_isr());
 
     mutex_t mutex;
 
@@ -40,12 +40,12 @@ void ztimer_sleep(ztimer_clock_t *clock, uint32_t duration)
 void ztimer_periodic_wakeup(ztimer_clock_t *clock, ztimer_now_t *last_wakeup,
                             uint32_t period)
 {
-    unsigned state = irq_disable();
+    unsigned state = cpu_irq_disable();
     ztimer_now_t now = ztimer_now(clock);
     ztimer_now_t target = *last_wakeup + period;
     ztimer_now_t offset = target - now;
 
-    irq_restore(state);
+    cpu_irq_restore(state);
 
     if (offset <= period) {
         ztimer_sleep(clock, offset);

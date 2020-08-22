@@ -31,7 +31,7 @@ void cpu_irq_restore(unsigned state);
 
 int cpu_is_in_isr(void);
 
-void cpu_end_of_isr(void *instances);
+extern void cpu_end_of_isr(void);
 
 void cpu_trigger_pendsv_interrupt(void);
 

@@ -619,7 +619,12 @@ TEST_F(TestThread, multiple_thread_test)
      * requested, therefore after exiting Isr function PendSV interrupt will be
      * triggered and run thread scheduler */
 
-    cpu_end_of_isr((instance_t *)&instance);
+    /* this equal to cpu_end_of_isr() */
+
+    if (instance->get<ThreadScheduler>().is_context_switch_requested())
+    {
+        ThreadScheduler::yield_higher_priority_thread();
+    }
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RECEIVE_BLOCKED);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_RUNNING);
