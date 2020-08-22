@@ -4,13 +4,11 @@ set(unittest-includes ${unittest-includes}
 set(unittest-sources
     ../../source/core/instance.cpp
     ../../source/core/thread.cpp
-    ../../source/core/xtimer.cpp
     ../../source/core/mutex.cpp
     ../../source/core/assert_failure.c
     stubs/cpu_stub.c
     stubs/thread_stub.c
     stubs/thread_arch_stub.c
-    stubs/xtimer_stub.c
 )
 
 set(unittest-test-sources

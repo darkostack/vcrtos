@@ -98,12 +98,6 @@ static inline void ztimer_init_extend(ztimer_clock_t *clock)
 
 extern ztimer_clock_t *const ZTIMER_USEC;
 
-extern ztimer_clock_t *const ZTIMER_MSEC;
-
-extern ztimer_clock_t *const ZTIMER_USEC_BASE;
-
-extern ztimer_clock_t *const ZTIMER_MSEC_BASE;
-
 #ifdef __cplusplus
 }
 #endif

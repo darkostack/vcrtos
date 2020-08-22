@@ -4,6 +4,10 @@
 #include "core/thread.hpp"
 #include "core/code_utils.h"
 
+#if VCRTOS_CONFIG_ZTIMER_ENABLE
+#include <vcrtos/ztimer.h>
+#endif
+
 namespace vc {
 
 Thread *Thread::init(Instance &instances, char *stack, int size, unsigned priority, int flags,
@@ -237,7 +241,11 @@ void ThreadScheduler::run(void)
 
     if (current_thread == next_thread) return;
 
-    uint32_t time_now = 0; /* TODO: use ztimer now */
+#if VCRTOS_CONFIG_ZTIMER_ENABLE
+    uint32_t time_now = ztimer_now(ZTIMER_USEC);
+#else
+    uint32_t time_now = 0;
+#endif
 
     if (current_thread != NULL)
     {
