@@ -1,5 +1,4 @@
 #include <vcrtos/assert.h>
-#include <vcrtos/xtimer.h>
 
 #include "core/instance.hpp"
 #include "core/thread.hpp"
@@ -238,7 +237,7 @@ void ThreadScheduler::run(void)
 
     if (current_thread == next_thread) return;
 
-    uint32_t time_now = xtimer_now_usec(instance);
+    uint32_t time_now = 0; /* TODO: use ztimer now */
 
     if (current_thread != NULL)
     {

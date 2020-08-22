@@ -8,7 +8,6 @@
 #include <vcrtos/instance.h>
 
 #include "core/thread.hpp"
-#include "core/xtimer.hpp"
 
 typedef struct instance
 {
@@ -42,19 +41,12 @@ private:
 
     ThreadScheduler thread_scheduler;
 
-    XTimerScheduler xtimer_scheduler;
-
     bool initialized;
 };
 
 template <> inline ThreadScheduler &Instance::get(void)
 {
     return thread_scheduler;
-}
-
-template <> inline XTimerScheduler &Instance::get(void)
-{
-    return xtimer_scheduler;
 }
 
 } // namespace vc

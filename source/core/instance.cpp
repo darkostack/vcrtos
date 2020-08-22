@@ -1,7 +1,6 @@
 #include "core/instance.hpp"
 #include "core/code_utils.h"
 #include "core/thread.hpp"
-#include "core/xtimer.hpp"
 #include "core/new.hpp"
 
 namespace vc {
@@ -12,7 +11,6 @@ DEFINE_ALIGNED_VAR(instance_raw, sizeof(Instance), uint64_t);
 
 Instance::Instance(void)
     : thread_scheduler(*this)
-    , xtimer_scheduler(*this)
     , initialized(false)
 {
 #ifdef UNITTEST
