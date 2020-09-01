@@ -10,6 +10,8 @@
 extern "C" {
 #endif
 
+#define ZTIMER_CLOCK_SECOND VCRTOS_CONFIG_ZTIMER_CLOCK_SECOND
+
 typedef struct ztimer_base ztimer_base_t;
 
 typedef struct ztimer_clock ztimer_clock_t;
