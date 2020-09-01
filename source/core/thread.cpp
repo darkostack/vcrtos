@@ -366,9 +366,9 @@ uint8_t ThreadScheduler::get_lsb_index_from_runqueue(void)
 
 Thread *ThreadScheduler::get_next_thread_from_runqueue(void)
 {
-    uint8_t thread_idx = get_lsb_index_from_runqueue();
+    uint8_t priority = get_lsb_index_from_runqueue();
 
-    list_node_t *thread_ptr_in_queue = static_cast<list_node_t *>((scheduler_runqueue[thread_idx].next)->next);
+    list_node_t *thread_ptr_in_queue = static_cast<list_node_t *>((scheduler_runqueue[priority].next)->next);
 
     thread_t *thread = container_of(thread_ptr_in_queue, thread_t, runqueue_entry);
 
