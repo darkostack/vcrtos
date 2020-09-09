@@ -550,7 +550,10 @@ void ThreadScheduler::thread_flags_set(Thread *thread, thread_flags_t mask)
     {
         cpu_irq_restore(state);
 
-        yield_higher_priority_thread();
+        if (!cpu_is_in_isr())
+        {
+            yield_higher_priority_thread();
+        }
     }
     else
     {
