@@ -490,6 +490,14 @@ const char *ThreadScheduler::thread_status_to_string(thread_status_t status)
         retval = "bl reply";
         break;
 
+    case THREAD_STATUS_FLAG_BLOCKED_ANY:
+        retval = "bl flag";
+        break;
+
+    case THREAD_STATUS_FLAG_BLOCKED_ALL:
+        retval = "bl flags";
+        break;
+
     default:
         retval = "unknown";
         break;
@@ -645,15 +653,9 @@ thread_flags_t ThreadScheduler::thread_flags_wait_one(thread_flags_t mask)
 
 #if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
 
-void EventQueue::claim(void)
+void EventQueue::event_post(Event *event, Thread *thread)
 {
-    vcassert(waiter == NULL);
-    waiter = static_cast<thread_t *>(get<ThreadScheduler>().get_current_active_thread());
-}
-
-void EventQueue::event_post(Event *event)
-{
-    vcassert(event);
+    vcassert(event && thread != NULL);
 
     unsigned state = cpu_irq_disable();
 
@@ -662,14 +664,9 @@ void EventQueue::event_post(Event *event)
         (static_cast<Clist *>(&event_list))->right_push(static_cast<Clist *>(&event->list_node));
     }
 
-    Thread *thread_waiter = static_cast<Thread *>(waiter);
-
     cpu_irq_restore(state);
 
-    if (thread_waiter != NULL)
-    {
-        get<ThreadScheduler>().thread_flags_set(thread_waiter, THREAD_FLAG_EVENT);
-    }
+    get<ThreadScheduler>().thread_flags_set(thread, THREAD_FLAG_EVENT);
 }
 
 void EventQueue::event_cancel(Event *event)
@@ -701,7 +698,7 @@ Event *EventQueue::event_get(void)
     return result;
 }
 
-Event  *EventQueue::event_wait(void)
+Event *EventQueue::event_wait(void)
 {
     Event *result = NULL;
 
@@ -740,29 +737,6 @@ Event  *EventQueue::event_wait(void)
 #endif
 
     return result;
-}
-
-void EventQueue::event_loop(void)
-{
-    Event *event = NULL;
-
-#ifdef UNITTEST
-
-    event = event_wait();
-
-    if (event)
-    {
-        event->handler(static_cast<event_t *>(event));
-    }
-
-#else
-
-    while ((event = event_wait()))
-    {
-        event->handler(static_cast<event_t *>(event));
-    }
-
-#endif
 }
 
 #endif // #if VCRTOS_CONFIG_THREAD_EVENT_ENABLE

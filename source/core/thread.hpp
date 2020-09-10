@@ -91,10 +91,9 @@ private:
 class Event : public event_t
 {
 public:
-    explicit Event(event_handler_func_t func)
+    Event(void)
     {
         list_node.next = NULL;
-        handler = func;
     }
 };
 
@@ -104,7 +103,6 @@ public:
     explicit EventQueue(Instance &instances)
     {
         event_list.next = NULL;
-        waiter = NULL;
 #if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
         instance = static_cast<void *>(&instances);
 #else
@@ -112,17 +110,13 @@ public:
 #endif
     }
 
-    void claim(void);
-
-    void event_post(Event *event);
+    void event_post(Event *event, Thread *thread);
 
     void event_cancel(Event *event);
 
     Event *event_get(void);
 
     Event *event_wait(void);
-
-    void event_loop(void);
 
 private:
     template <typename Type> inline Type &get(void) const;

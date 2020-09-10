@@ -10,30 +10,24 @@ extern "C" {
 
 #define THREAD_FLAG_EVENT (0x1)
 
-typedef struct event event_t;
-
-typedef void (*event_handler_func_t)(event_t *event);
-
-struct event
+typedef struct
 {
     clist_node_t list_node;
-    event_handler_func_t handler;
-};
+} event_t;
 
 typedef struct
 {
     clist_node_t event_list;
-    thread_t *waiter;
 #if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
     void *instance;
 #endif
 } event_queue_t;
 
+void event_init(event_t *event);
+
 void event_queue_init(void *instance, event_queue_t *queue);
 
-void event_queue_claim(event_queue_t *queue);
-
-void event_post(event_queue_t *queue, event_t *event);
+void event_post(event_queue_t *queue, event_t *event, thread_t *thread);
 
 void event_cancel(event_queue_t *queue, event_t *event);
 

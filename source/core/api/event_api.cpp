@@ -11,22 +11,21 @@
 
 using namespace vc;
 
+void event_init(event_t *event)
+{
+    event = new (event) Event();
+}
+
 void event_queue_init(void *instances, event_queue_t *queue)
 {
     Instance &instance = *static_cast<Instance *>(instances);
     queue = new (queue) EventQueue(instance);
 }
 
-void event_queue_claim(event_queue_t *queue)
+void event_post(event_queue_t *queue, event_t *event, thread_t *thread)
 {
     EventQueue &event_queue = *static_cast<EventQueue *>(queue);
-    event_queue.claim();
-}
-
-void event_post(event_queue_t *queue, event_t *event)
-{
-    EventQueue &event_queue = *static_cast<EventQueue *>(queue);
-    event_queue.event_post(reinterpret_cast<Event *>(event));
+    event_queue.event_post(reinterpret_cast<Event *>(event), static_cast<Thread *>(thread));
 }
 
 void event_cancel(event_queue_t *queue, event_t *event)
@@ -45,12 +44,6 @@ event_t *event_wait(event_queue_t *queue)
 {
     EventQueue &event_queue = *static_cast<EventQueue *>(queue);
     return event_queue.event_wait();
-}
-
-void event_loop(event_queue_t *queue)
-{
-    EventQueue &event_queue = *static_cast<EventQueue *>(queue);
-    event_queue.event_loop();
 }
 
 #endif // #if VCRTOS_CONFIG_THREAD_EVENT_ENABLE
