@@ -118,6 +118,8 @@ public:
 
     Event *event_wait(void);
 
+    static void event_release(Event *event);
+
 private:
     template <typename Type> inline Type &get(void) const;
 

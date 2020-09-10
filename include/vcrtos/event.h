@@ -37,6 +37,8 @@ event_t *event_wait(event_queue_t *queue);
 
 void event_loop(event_queue_t *queue);
 
+void event_release(event_t *event);
+
 #ifdef __cplusplus
 }
 #endif

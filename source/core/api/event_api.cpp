@@ -46,4 +46,9 @@ event_t *event_wait(event_queue_t *queue)
     return event_queue.event_wait();
 }
 
+void event_release(event_t *event)
+{
+    EventQueue::event_release(reinterpret_cast<Event *>(event));
+}
+
 #endif // #if VCRTOS_CONFIG_THREAD_EVENT_ENABLE

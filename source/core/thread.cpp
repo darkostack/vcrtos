@@ -712,10 +712,6 @@ Event *EventQueue::event_wait(void)
     {
         get<ThreadScheduler>().thread_flags_wait_any(THREAD_FLAG_EVENT);
     }
-    else
-    {
-        result->list_node.next = NULL;
-    }
 
 #else
 
@@ -732,11 +728,15 @@ Event *EventQueue::event_wait(void)
 
     } while (result == NULL);
 
-    result->list_node.next = NULL;
-
 #endif
 
     return result;
+}
+
+void EventQueue::event_release(Event *event)
+{
+    /* Note: before releasing the event, make sure it's no longer in the event_queue */
+    event->list_node.next = NULL;
 }
 
 #endif // #if VCRTOS_CONFIG_THREAD_EVENT_ENABLE

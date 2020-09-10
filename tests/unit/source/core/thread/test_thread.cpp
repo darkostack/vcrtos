@@ -1337,8 +1337,7 @@ TEST_F(TestThread, thread_event_test)
     queue.event_post(&event1, event_thread);
     queue.event_post(&event1, event_thread);
 
-    /* Note: posting same event multiple times will not increase event_queue,
-     * therefore only one event from thouse events will be stored in event_queue */
+    /* Note: [IMPORTANT] posting same event multiple times will not increase event_queue */
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1354,7 +1353,13 @@ TEST_F(TestThread, thread_event_test)
      * alread in running status */
 
     EXPECT_EQ(queue.event_wait(), &event1);
-    EXPECT_EQ(queue.event_wait(), nullptr);
+    queue.event_release(&event1);
+
+    /* Note: [IMPORTANT] event_wait() need to release the event manually before
+     * it can be reuse, and make sure the event is not in the queue when you
+     * release it */
+
+    EXPECT_EQ(queue.event_wait(), nullptr); /* nothing on the queue */
 
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1390,6 +1395,8 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
     EXPECT_EQ(queue.event_wait(), &event1);
+
+    queue.event_release(&event1); /* event1 no longer in the queue, so release it for later use */
 
     EXPECT_NE(event_thread->flags, 0);
 
@@ -1435,6 +1442,8 @@ TEST_F(TestThread, thread_event_test)
 
     EXPECT_EQ(queue.event_wait(), &event1);
 
+    queue.event_release(&event1);
+
     EXPECT_NE(event_thread->flags, 0);
 
     /* Note: try to clear event thread flags first before calling event_loop() */
@@ -1471,6 +1480,9 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
     event_t *ev = queue.event_get();
+
+    /* Note: event_get() will automatically release the event, so no need to
+     * call event_release() */
 
     EXPECT_NE(ev, nullptr);
     EXPECT_EQ(ev, &event1);
@@ -1513,6 +1525,8 @@ TEST_F(TestThread, thread_event_test)
 
     queue.event_cancel(&event3);
 
+    /* Note: event_cancel() will automatically release the the event */
+    
     EXPECT_EQ(main_thread->get_status(), THREAD_STATUS_RUNNING);
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_PENDING);
@@ -1536,6 +1550,7 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(ev, &event4);
 
     EXPECT_EQ(queue.event_wait(), &event5);
+    queue.event_release(&event5);
 
     ev = queue.event_get(); /* no event available */
 
@@ -1586,8 +1601,13 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
     EXPECT_EQ(queue.event_wait(), &event4); /* this will get event4 */
+    queue.event_release(&event4);
+
     EXPECT_EQ(queue.event_wait(), &event5); /* this will get event5 */
+    queue.event_release(&event5);
+
     EXPECT_EQ(queue.event_wait(), &event3); /* this will get event3 */
+    queue.event_release(&event3);
 
     ev = queue.event_get(); /* no event left */
 
@@ -1630,6 +1650,7 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_RUNNING);
 
     custom_event_t *event = (custom_event_t *)queue.event_wait();
+    queue.event_release(reinterpret_cast<Event *>(event));
 
     EXPECT_NE(event, nullptr);
 
