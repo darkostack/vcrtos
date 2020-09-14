@@ -15,38 +15,46 @@
  * Authors: Darko Pancev <darko.pancev@vertexcom.com>
  */
 
-#ifndef VCRTOS_MUTEX_H
-#define VCRTOS_MUTEX_H
+#ifndef VCRTOS_SEMA_H
+#define VCRTOS_SEMA_H
+
+#include <stdint.h>
 
 #include <vcrtos/config.h>
-#include <vcrtos/list.h>
+#include <vcrtos/mutex.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define MUTEX_LOCKED ((list_node_t *)-1)
-
-typedef struct mutex
+typedef enum
 {
-    list_node_t queue;
-#if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
+    SEMA_OK = 0,
+    SEMA_DESTROY,
+} sema_state_t;
+
+typedef struct
+{
+    unsigned int value;
+    sema_state_t state;
+    mutex_t mutex;
     void *instance;
-#endif
-} mutex_t;
+} sema_t;
 
-void mutex_init(void *instance, mutex_t *mutex);
+void sema_create(void *instance, sema_t *sema, unsigned int value);
 
-void mutex_lock(mutex_t *mutex);
+void sema_destroy(sema_t *sema);
 
-int mutex_try_lock(mutex_t *mutex);
+int sema_post(sema_t *sema);
 
-void mutex_unlock(mutex_t *mutex);
+int sema_wait_timed(sema_t *sema, uint64_t timeout);
 
-void mutex_unlock_and_sleeping(mutex_t *mutex);
+int sema_wait(sema_t *sema);
+
+int sema_try_wait(sema_t *sema);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* VCRTOS_MUTEX_H */
+#endif /* VCRTOS_SEMA_H */

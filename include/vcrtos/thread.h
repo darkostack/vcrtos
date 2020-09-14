@@ -97,6 +97,10 @@ void thread_scheduler_set_context_switch_request(void *instance, unsigned state)
 
 void thread_scheduler_run(void *instance);
 
+void thread_scheduler_set_status(void *instance, thread_t *thread, thread_status_t status);
+
+void thread_scheduler_switch(void *instance, uint8_t priority);
+
 void thread_exit(void *instance);
 
 int thread_pid_is_valid(kernel_pid_t pid);

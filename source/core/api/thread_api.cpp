@@ -62,6 +62,18 @@ void thread_scheduler_run(void *instance)
     instances.get<ThreadScheduler>().run();
 }
 
+void thread_scheduler_set_status(void *instance, thread_t *thread, thread_status_t status)
+{
+    Instance &instances = *static_cast<Instance *>(instance);
+    instances.get<ThreadScheduler>().set_thread_status(static_cast<Thread *>(thread), status);
+}
+
+void thread_scheduler_switch(void *instance, uint8_t priority)
+{
+    Instance &instances = *static_cast<Instance *>(instance);
+    instances.get<ThreadScheduler>().context_switch(priority);
+}
+
 void thread_exit(void *instance)
 {
     Instance &instances = *static_cast<Instance *>(instance);

@@ -15,38 +15,37 @@
  * Authors: Darko Pancev <darko.pancev@vertexcom.com>
  */
 
-#ifndef VCRTOS_MUTEX_H
-#define VCRTOS_MUTEX_H
+#ifndef VCRTOS_RMUTEX_H
+#define VCRTOS_RMUTEX_H
+
+#include <stdint.h>
+#include <stdatomic.h>
 
 #include <vcrtos/config.h>
-#include <vcrtos/list.h>
+#include <vcrtos/mutex.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define MUTEX_LOCKED ((list_node_t *)-1)
-
-typedef struct mutex
+typedef struct
 {
-    list_node_t queue;
-#if VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
+    mutex_t mutex;
+    uint16_t refcount;
+    atomic_int_least16_t owner;
     void *instance;
-#endif
-} mutex_t;
+} rmutex_t;
 
-void mutex_init(void *instance, mutex_t *mutex);
+void rmutex_init(void *instance, rmutex_t *rmutex);
 
-void mutex_lock(mutex_t *mutex);
+void rmutex_lock(rmutex_t *rmutex);
 
-int mutex_try_lock(mutex_t *mutex);
+int rmutex_trylock(rmutex_t *rmutex);
 
-void mutex_unlock(mutex_t *mutex);
-
-void mutex_unlock_and_sleeping(mutex_t *mutex);
+void rmutex_unlock(rmutex_t *rmutex);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* VCRTOS_MUTEX_H */
+#endif /* VCRTOS_RMUTEX_H */

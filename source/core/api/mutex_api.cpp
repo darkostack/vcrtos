@@ -35,10 +35,10 @@ void mutex_lock(mutex_t *mutex)
     mtx.lock();
 }
 
-void mutex_try_lock(mutex_t *mutex)
+int mutex_try_lock(mutex_t *mutex)
 {
     Mutex &mtx = *static_cast<Mutex *>(mutex);
-    mtx.try_lock();
+    return mtx.try_lock();
 }
 
 void mutex_unlock(mutex_t *mutex)
