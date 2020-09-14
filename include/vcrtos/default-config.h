@@ -132,4 +132,8 @@
 #define VCRTOS_CONFIG_ZTIMER_CLOCK_SECOND (1200000LU)
 #endif
 
+#ifndef VCRTOS_CONFIG_HEAP_SIZE
+#define VCRTOS_CONFIG_HEAP_SIZE (3072 * sizeof(void *))
+#endif
+
 #endif /* VCRTOS_DEFAULT_CONFIG_H */

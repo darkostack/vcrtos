@@ -28,6 +28,9 @@ DEFINE_ALIGNED_VAR(instance_raw, sizeof(Instance), uint64_t);
 
 Instance::Instance(void)
     : thread_scheduler(*this)
+#if !VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
+    , heap()
+#endif
     , initialized(false)
 {
 #ifdef UNITTEST
