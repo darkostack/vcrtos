@@ -201,14 +201,14 @@ int Thread::has_msg_queue(void)
 
 int Thread::get_numof_msg_in_queue(void)
 {
-    int queued_msg = -1;
+    int queued_msgs = -1;
 
     if (has_msg_queue())
     {
-        queued_msg = (static_cast<Cib *>(&msg_queue))->avail();
+        queued_msgs = (static_cast<Cib *>(&msg_queue))->avail();
     }
 
-    return queued_msg;
+    return queued_msgs;
 }
 
 int Thread::is_pid_valid(kernel_pid_t pid)

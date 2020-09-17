@@ -275,7 +275,7 @@ int Msg::send_in_isr(kernel_pid_t target_pid)
     }
 }
 
-int Msg::send_receive(Msg *reply, kernel_pid_t target_pid)
+int Msg::send_receive(Msg *reply_msg, kernel_pid_t target_pid)
 {
     vcassert(get<ThreadScheduler>().get_current_active_pid() != target_pid);
 
@@ -285,18 +285,18 @@ int Msg::send_receive(Msg *reply, kernel_pid_t target_pid)
 
     get<ThreadScheduler>().set_thread_status(current_thread, THREAD_STATUS_REPLY_BLOCKED);
 
-    current_thread->wait_data = static_cast<void *>(reply);
+    current_thread->wait_data = static_cast<void *>(reply_msg);
 
     /* we re-use (abuse) reply for sending, because wait_data might be
      * overwritten if the target is not in RECEIVE_BLOCKED */
 
-    *reply = *this;
+    *reply_msg = *this;
 
     /* Send() blocks until reply received */
-    return reply->send(target_pid, 1 /* blocking */, state);
+    return reply_msg->send(target_pid, 1 /* blocking */, state);
 }
 
-int Msg::reply(Msg *reply)
+int Msg::reply(Msg *reply_msg)
 {
     unsigned state = cpu_irq_disable();
 
@@ -313,7 +313,7 @@ int Msg::reply(Msg *reply)
 
     Msg *target_msg = static_cast<Msg *>(target_thread->wait_data);
 
-    *target_msg = *reply;
+    *target_msg = *reply_msg;
 
     get<ThreadScheduler>().set_thread_status(target_thread, THREAD_STATUS_PENDING);
 
@@ -326,7 +326,7 @@ int Msg::reply(Msg *reply)
     return 1;
 }
 
-int Msg::reply_in_isr(Msg *reply)
+int Msg::reply_in_isr(Msg *reply_msg)
 {
     Thread *target_thread = get<ThreadScheduler>().get_thread_from_scheduler(sender_pid);
 
@@ -337,7 +337,7 @@ int Msg::reply_in_isr(Msg *reply)
 
     Msg *target_msg = static_cast<Msg *>(target_thread->wait_data);
 
-    *target_msg = *reply;
+    *target_msg = *reply_msg;
 
     get<ThreadScheduler>().set_thread_status(target_thread, THREAD_STATUS_PENDING);
 
