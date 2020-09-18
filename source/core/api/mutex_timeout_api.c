@@ -64,8 +64,8 @@ static void _mutex_timeout(void *arg)
     unsigned int irqstate = cpu_irq_disable();
     mutex_thread_t *mt = (mutex_thread_t *)arg;
     mt->blocking = 0;
-    cpu_irq_restore(irqstate);
     _mutex_remove_thread_from_waiting_queue(mt->instance, mt->mutex, mt->thread, &mt->dequeued);
+    cpu_irq_restore(irqstate);
 }
 
 int mutex_lock_timeout(void *instance, mutex_t *mutex, uint32_t timeout)
@@ -99,5 +99,3 @@ int mutex_lock_timeout(void *instance, mutex_t *mutex, uint32_t timeout)
     ztimer_remove(ZTIMER_USEC, &t);
     return -mt.dequeued;
 }
-
-
