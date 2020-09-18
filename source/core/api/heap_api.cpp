@@ -17,27 +17,58 @@
 
 #include <vcrtos/config.h>
 #include <vcrtos/heap.h>
+#include <vcrtos/assert.h>
 
-#include "core/instance.hpp"
+#include "core/code_utils.h"
+#include "core/new.hpp"
 
 #include "utils/heap.hpp"
 
-#if !VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
-
 using namespace vc;
+using namespace utils;
 
-void heap_free(void *instance, void *ptr)
+DEFINE_ALIGNED_VAR(heap_raw, sizeof(Heap), uint64_t);
+
+static Heap *heap = NULL;
+
+void *heap_init(void)
 {
-    Instance &instances = *static_cast<Instance *>(instance);
-    utils::Heap heap = instances.get_heap();
-    heap.free(ptr);
+    vcassert(heap == NULL);
+    heap = new (&heap_raw) Heap();
+    return heap;
 }
 
-void *heap_calloc(void *instance, size_t count, size_t size)
+size_t heap_get_free_size(void)
 {
-    Instance &instances = *static_cast<Instance *>(instance);
-    utils::Heap heap = instances.get_heap();
-    return heap.calloc(count, size);
+    vcassert(heap != NULL);
+    return heap->get_free_size();
 }
 
-#endif // #if !VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
+size_t heap_get_capacity(void)
+{
+    vcassert(heap != NULL);
+    return heap->get_capacity();
+}
+
+bool heap_is_clean(void)
+{
+    vcassert(heap != NULL);
+    return heap->is_clean();
+}
+
+void heap_free(void *ptr)
+{
+    vcassert(heap != NULL);
+    heap->free(ptr);
+}
+
+void *heap_malloc(size_t size)
+{
+    return heap_calloc(1, size);
+}
+
+void *heap_calloc(size_t count, size_t size)
+{
+    vcassert(heap != NULL);
+    return heap->calloc(count, size);
+}

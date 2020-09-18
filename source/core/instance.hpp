@@ -26,10 +26,6 @@
 
 #include "core/thread.hpp"
 
-#if !VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
-#include "utils/heap.hpp"
-#endif
-
 typedef struct instance
 {
 } instance_t;
@@ -49,10 +45,6 @@ public:
     static Instance &get(void);
 #endif
 
-#if !VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
-    utils::Heap &get_heap(void) { return heap; }
-#endif
-
     bool is_initialized(void) const { return initialized; }
 
     template <typename Type> inline Type &get(void);
@@ -65,10 +57,6 @@ private:
 #endif
 
     ThreadScheduler thread_scheduler;
-
-#if !VCRTOS_CONFIG_MULTIPLE_INSTANCE_ENABLE
-    utils::Heap heap;
-#endif
 
     bool initialized;
 };

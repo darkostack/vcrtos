@@ -26,9 +26,19 @@
 extern "C" {
 #endif
 
-void heap_free(void *instance, void *ptr);
+void *heap_init(void);
 
-void *heap_calloc(void *instance, size_t count, size_t size);
+size_t heap_get_free_size(void);
+
+size_t heap_get_capacity(void);
+
+bool heap_is_clean(void);
+
+void heap_free(void *ptr);
+
+void *heap_malloc(size_t size);
+
+void *heap_calloc(size_t count, size_t size);
 
 #ifdef __cplusplus
 }
