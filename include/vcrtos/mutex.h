@@ -18,6 +18,8 @@
 #ifndef VCRTOS_MUTEX_H
 #define VCRTOS_MUTEX_H
 
+#include <stdint.h>
+
 #include <vcrtos/config.h>
 #include <vcrtos/list.h>
 
@@ -44,6 +46,8 @@ int mutex_try_lock(mutex_t *mutex);
 void mutex_unlock(mutex_t *mutex);
 
 void mutex_unlock_and_sleeping(mutex_t *mutex);
+
+int mutex_lock_timeout(void *instance, mutex_t *mutex, uint32_t timeout);
 
 #ifdef __cplusplus
 }
