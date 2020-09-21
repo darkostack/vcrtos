@@ -1,4 +1,5 @@
 #include <vcrtos/config.h>
+#include <vcrtos/cpu.h>
 #include <vcrtos/assert.h>
 #include <vcrtos/ztimer.h>
 #include <vcrtos/thread.h>
