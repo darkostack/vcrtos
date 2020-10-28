@@ -44,6 +44,7 @@ void ztimer_sleep(ztimer_clock_t *clock, uint32_t duration)
         .arg = (void *)&mutex,
     };
 
+    mutex_lock(&mutex);
     ztimer_set(clock, &timer, duration);
     mutex_lock(&mutex);
 }
