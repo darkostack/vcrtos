@@ -1538,6 +1538,9 @@ TEST_F(TestThread, thread_event_test)
     EXPECT_EQ(idle_thread->get_status(), THREAD_STATUS_PENDING);
     EXPECT_EQ(event_thread->get_status(), THREAD_STATUS_PENDING);
 
+    EXPECT_EQ(queue.event_pending(), 5);
+    EXPECT_EQ(queue.event_peek(), &event1);
+
     /* cancel event 3 */
 
     queue.event_cancel(&event3);
